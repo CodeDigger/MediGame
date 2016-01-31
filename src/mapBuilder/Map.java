@@ -49,9 +49,9 @@ public class Map {
         Image i1 = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/textures/Tiles-01.png"), 8*w, 1*h, 
                 w+3, h+5, w, h, w, h);
         
-        tileStack1 = new TileStack(i0, i1, 40);
+        tileStack1 = new TileStack(i0, i1, 14);
         tileStack1.moveStack(300, 400);
-        tileStack2 = new TileStack(i0, i1, 40);
+        tileStack2 = new TileStack(i0, i1, 14);
         tileStack2.moveStack(316, 499);
         tileStack1.touchStack();
         tileStack2.touchStack();
@@ -104,8 +104,8 @@ public class Map {
         }
         System.out.println("Note: Draw: " + newTileType + " (" + div + "|" + d + ")");
         Tile t = initLand(newTileType);
-        tileStack1.touchStack();
-        tileStack2.touchStack();
+        tileStack1.drawStack();
+        tileStack2.drawStack();
         return t;
     }
 
@@ -369,6 +369,11 @@ public class Map {
         return tileArray[row][col];
     }
     
+    public void highlightStacks(int mX, int mY) {
+        tileStack1.checkHighlight(mX,mY);
+        tileStack2.checkHighlight(mX,mY);
+    }
+    
     public int getWidth() {
         return mapWidth;
     }
@@ -391,6 +396,13 @@ public class Map {
     public Image getImage(int type) {
         return tH.getImage(type);
     }
+    
+    /*public TileStack getMoustStack(MouseEvent mME) {
+        tileStack1.checkHighlight();
+        
+        
+        return null;
+    }*/
 
     public Tile getMouseTile(int mY, int mX) {
         mY -= screenY;

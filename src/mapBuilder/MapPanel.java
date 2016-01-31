@@ -150,6 +150,11 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     @Override
     public void mouseMoved(MouseEvent mME) {
         map.updateHighlight(mME);
+        //map.getHi(mME);
+        int pointX = mME.getX()-mapX;
+        int pointY = mME.getY()-mapY;
+        map.highlightStacks(pointX,pointY);
+        
         repaint();
     }
 
