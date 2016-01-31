@@ -78,7 +78,7 @@ public class Map {
         mapListeners.add(tL);
     }
 
-    public Tile drawLand() {
+    public Tile drawLand(TileStack tS) {
         int newTileType = 0;
         double d = Math.random();
         double div = (1.0 / TileHandler.DIFFERENT_TYPES);
@@ -104,8 +104,7 @@ public class Map {
         }
         System.out.println("Note: Draw: " + newTileType + " (" + div + "|" + d + ")");
         Tile t = initLand(newTileType);
-        tileStack1.drawStack();
-        tileStack2.drawStack();
+        tS.drawStack();
         return t;
     }
 
@@ -369,9 +368,14 @@ public class Map {
         return tileArray[row][col];
     }
     
-    public void highlightStacks(int mX, int mY) {
-        tileStack1.checkHighlight(mX,mY);
-        tileStack2.checkHighlight(mX,mY);
+    public TileStack highlightStacks(int mX, int mY) {
+        if (tileStack1.checkHighlight(mX,mY) ) {
+            return tileStack1;
+        }
+        if (tileStack2.checkHighlight(mX,mY)) {
+            return tileStack2;
+        }
+        return null;
     }
     
     public int getWidth() {

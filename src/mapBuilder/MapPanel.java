@@ -127,6 +127,16 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     @Override
     public void mouseReleased(MouseEvent mE) {
         if (mE.getButton() == MouseEvent.BUTTON1) {
+            pointX = mE.getX()-mapX;
+            pointY = mE.getY()-mapY;
+            TileStack tS = map.highlightStacks(pointX, pointY);
+            if (tS != null) {
+                Tile t = map.drawLand(tS);
+                player1.giveTile(t);
+                repaint();
+            }
+            
+            
             Tile tile = map.getMouseTile(mE.getY(), mE.getX());
 
             if (tile != null && player1.checkTile() != null) {
@@ -147,12 +157,15 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         repaint();
     }
 
+    int pointX = 0;
+    int pointY = 0;
+    
     @Override
     public void mouseMoved(MouseEvent mME) {
         map.updateHighlight(mME);
         //map.getHi(mME);
-        int pointX = mME.getX()-mapX;
-        int pointY = mME.getY()-mapY;
+        pointX = mME.getX()-mapX;
+        pointY = mME.getY()-mapY;
         map.highlightStacks(pointX,pointY);
         
         repaint();
@@ -225,8 +238,8 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     public void menuInteracted(int menuItem) {
         switch (menuItem) {
             case MenubarListener.ITEM_DRAW:
-                Tile t = map.drawLand();
-                player1.giveTile(t);
+                //Tile t = map.drawLand();
+                //player1.giveTile(t);
                 repaint();
                 break;
             case MenubarListener.ITEM_ROTATE:

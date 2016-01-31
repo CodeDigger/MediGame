@@ -75,12 +75,16 @@ public class TileStack {
     double testX;
     double testY;
     
-    public void checkHighlight(int mX, int mY) {
-        if (mX > stackX && mX < stackX+w && mY > stackY && mY < stackY+h) {
+    public boolean checkHighlight(int mX, int mY) {
+        int i = stackPositions.size();
+        int cornerX = stackX-4*i;
+        int cornerY = stackY-5*i;
+        if (mX > cornerX && mX < cornerX+w*Math.pow(scaleZ,i) && mY > cornerY && mY < cornerY+h*Math.pow(scaleZ,i)) {
             highlight = true;
         } else {
             highlight = false;
         }
+        return highlight;
     }
     
     public void paintShadow(Graphics g) {
@@ -109,7 +113,7 @@ public class TileStack {
         if (highlight) {
             g.setColor(new Color(255, 255, 255, 50));
             int scale = stackPositions.size();
-            g.fillRect(stackX-3*scale, stackY-4*scale, w, h);
+            g.fillRect(stackX-4*scale, stackY-5*scale, (int)(w*Math.pow(scaleZ,scale)), (int)(h*Math.pow(scaleZ,scale)) );
         }
         
         
