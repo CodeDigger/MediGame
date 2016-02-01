@@ -32,7 +32,7 @@ public class TileStack {
     ArrayList<StackPosition> stackPositions;
     boolean highlight = false;
     
-    public TileStack(Image bottomImg, Image stackImg, int i) {
+    public TileStack(Image bottomImg, Image stackImg, int i, int initX, int initY) {
         this.bottomImg = bottomImg;
         this.stackImg = stackImg;
         w = TileHandler.getWidth();
@@ -46,8 +46,11 @@ public class TileStack {
         for (int j = 0; j < stackCount; j++) {
             stackPositions.add(new StackPosition());
         }
+        stackX = initX;
+        stackY = initY;
         touchStack();
     }
+    
     
     public void moveStack(int newX, int newY) {
         stackX = newX;
@@ -72,14 +75,17 @@ public class TileStack {
         }
     }
     
+    public int getStackCount() {
+        return stackCount;
+    }
+    
     double testX;
     double testY;
     
     public boolean checkHighlight(int mX, int mY) {
-        int i = stackPositions.size();
-        int cornerX = stackX-4*i;
-        int cornerY = stackY-5*i;
-        if (mX > cornerX && mX < cornerX+w*Math.pow(scaleZ,i) && mY > cornerY && mY < cornerY+h*Math.pow(scaleZ,i)) {
+        int cornerX = stackX-4*stackCount;
+        int cornerY = stackY-5*stackCount;
+        if (mX > cornerX && mX < cornerX+w*Math.pow(scaleZ,stackCount) && mY > cornerY && mY < cornerY+h*Math.pow(scaleZ,stackCount)) {
             highlight = true;
         } else {
             highlight = false;
@@ -89,7 +95,7 @@ public class TileStack {
     
     public void paintShadow(Graphics g) {
         g.setColor(new Color(40,40,40,70));
-        g.fillRoundRect((int)stackX-28, stackY-42, 90, 106, 80, 80);
+        g.fillRoundRect((int)stackX-8-stackCount*3, stackY-5-stackCount*3, 68+stackCount*3, 68+stackCount*3, 20+stackCount*5, 20+stackCount*4);
     }
     
     public void paint(Graphics g) {
@@ -112,8 +118,7 @@ public class TileStack {
         
         if (highlight) {
             g.setColor(new Color(255, 255, 255, 50));
-            int scale = stackPositions.size();
-            g.fillRect(stackX-4*scale, stackY-5*scale, (int)(w*Math.pow(scaleZ,scale)), (int)(h*Math.pow(scaleZ,scale)) );
+            g.fillRect(stackX-4*stackCount, stackY-5*stackCount, (int)(w*Math.pow(scaleZ,stackCount)), (int)(h*Math.pow(scaleZ,stackCount)) );
         }
         
         

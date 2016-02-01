@@ -134,24 +134,24 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
                 Tile t = map.drawLand(tS);
                 player1.giveTile(t);
                 repaint();
-            }
-            
-            
-            Tile tile = map.getMouseTile(mE.getY(), mE.getX());
-
-            if (tile != null && player1.checkTile() != null) {
-                int currentRow = tile.getRow();
-                int currentCol = tile.getCol();
-
-                map.playerPlaceLand(player1, currentRow, currentCol);
-                //if (matchSurroundings(currentRow, currentCol, newLand)) createLand(currentRow, currentCol, newLand);
-                //createLand(new City(currentRow, currentCol, tH.getImage(TileHandler.CITY_E)));
             } else {
-                System.out.println("WARNING: No Tile to place!");
+                Tile tile = map.getMouseTile(mE.getY(), mE.getX());
+
+                if (tile != null && player1.checkTile() != null) {
+                    int currentRow = tile.getRow();
+                    int currentCol = tile.getCol();
+
+                    map.playerPlaceLand(player1, currentRow, currentCol);
+                } else {
+                    //Do Nothing
+                }
             }
+            
+            
 
         } else if (mE.getButton() == MouseEvent.BUTTON3) {
             Tile tile = map.getMouseTile(mE.getY(), mE.getX());
+            System.out.println("SDOIASD");
         }
         map.updateHighlight(mE);
         repaint();
@@ -223,6 +223,10 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         switch (keyCode) {
             case KeyEvent.VK_ESCAPE:
                 System.out.println("_Key: Esc");
+                break;
+            case KeyEvent.VK_SPACE:
+                player1.rotateTile();
+                break;
             case KeyEvent.VK_E:
                 System.out.println("_Key: E");
                 break;

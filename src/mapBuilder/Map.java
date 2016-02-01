@@ -26,8 +26,7 @@ public class Map {
     Image bgi;
     private TileHandler tH;
     
-    TileStack tileStack1;
-    TileStack tileStack2;
+    ArrayList<TileStack> stackList = new ArrayList();
 
     private Tile[][] tileArray;
     private Tile[] highlightedTiles = null;
@@ -49,12 +48,10 @@ public class Map {
         Image i1 = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/textures/Tiles-01.png"), 8*w, 1*h, 
                 w+3, h+5, w, h, w, h);
         
-        tileStack1 = new TileStack(i0, i1, 14);
-        tileStack1.moveStack(300, 400);
-        tileStack2 = new TileStack(i0, i1, 14);
-        tileStack2.moveStack(316, 499);
-        tileStack1.touchStack();
-        tileStack2.touchStack();
+        stackList.add(new TileStack(i0,i1,14,300,400));
+        stackList.add(new TileStack(i0,i1,14,214,490));
+        stackList.add(new TileStack(i0,i1,14,324,520));
+        stackList.add(new TileStack(i0,i1,14,286,618));
         
 
         generateMap();
@@ -105,6 +102,9 @@ public class Map {
         System.out.println("Note: Draw: " + newTileType + " (" + div + "|" + d + ")");
         Tile t = initLand(newTileType);
         tS.drawStack();
+        if (tS.getStackCount() == 0) {
+            stackList.remove(tS);
+        }
         return t;
     }
 
@@ -278,11 +278,10 @@ public class Map {
             }
         }
         
-        tileStack1.paintShadow(g);
-        tileStack2.paintShadow(g);
-        
-        tileStack1.paint(g);
-        tileStack2.paint(g);
+        for (TileStack tS : stackList) {
+            tS.paintShadow(g);
+            tS.paint(g);
+        }
 
         for (int row = 0; row < yCount; row++) {
             for (int col = 0; col < xCount; col++) {
@@ -369,12 +368,12 @@ public class Map {
     }
     
     public TileStack highlightStacks(int mX, int mY) {
-        if (tileStack1.checkHighlight(mX,mY) ) {
-            return tileStack1;
+        for (TileStack tS : stackList) {
+            if (tS.checkHighlight(mX, mY)) {
+                return tS;
+            }
         }
-        if (tileStack2.checkHighlight(mX,mY)) {
-            return tileStack2;
-        }
+        
         return null;
     }
     
