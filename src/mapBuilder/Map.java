@@ -154,6 +154,7 @@ public class Map {
     }
 
     boolean placeLand(Tile t, int row, int col) {
+        
         if (matchSurroundings(t, row, col)) {
             t.place(row, col);
             tileArray[row][col] = t;
@@ -191,8 +192,16 @@ public class Map {
     }
 
     private boolean matchSurroundings(Tile toBePlaced, int row, int col) {
+        Tile t = tileArray[row][col];
+        if (t != null) {
+            if (!t.isEmpty()) {
+                System.out.println("(WARNING): Occupied!");
+                return false;
+            }
+        }
+        
+        t = null;
         //UNDER
-        Tile t = null;
         if (row - 1 >= 0) {
             t = tileArray[row - 1][col];
         }
