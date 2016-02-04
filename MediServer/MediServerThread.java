@@ -70,23 +70,7 @@ public class MediServerThread extends Thread {
                     break;
             }
 
-            /*while ((inputLine = in.readLine()) != null) {
-                if(clientIndex == 1){
-                    outputLine = mediProtocol.client1Turn(inputLine);
-                    if (outputLine != "0"){
-                        out.println(outputLine);}
-                    if (outputLine.equals("Bye."))
-                        break;
-                }
-                else if (clientIndex == 2){
-                    outputLine =  mediProtocol.client2Turn(inputLine);
-                    if (outputLine != "0"){
-                        out.println(outputLine);}
-                    if (outputLine.equals("Bye."))
-                        break;
-                }
 
-            }*/
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();

@@ -51,18 +51,15 @@ public class MediClient {
             while (true) {
                 switch (state) {
                     case WAIT:
-                        //System.out.println("Waiting...");
                         //while ((fromServer = in.readLine()) != null) {
                         fromServer = in.readLine();
                         System.out.println("Other guy: " + fromServer);
                         if (fromServer.equals("Bye."))
                             break;
                         //}
-                        //System.out.println("Done waiting!");
                         state = WRITE;
                         break;
                     case WRITE:
-                        //System.out.println("Writing...");
                         fromUser = stdIn.readLine();
                         if (fromUser != null) {
                             System.out.println("You: " + fromUser);
@@ -72,7 +69,6 @@ public class MediClient {
                             fromUser = "DUMDUM";
                             out.println(fromUser);
                         }
-                        //System.out.println("Done writing!");
                         state = WAIT;
                         break;
                     default:
@@ -88,6 +84,7 @@ public class MediClient {
         } catch (IOException e) {
             System.err.println("Couldn't get I/O for the connection to " +
                     hostName);
+            e.printStackTrace();
             System.exit(1);
         }
     }
