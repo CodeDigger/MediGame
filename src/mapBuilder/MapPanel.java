@@ -25,6 +25,8 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     int mapX = 0;
     int mapY = 0;
 
+    
+    
     Player player1;
 
     public MapPanel(Dimension dim) {
@@ -100,13 +102,13 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         t1 = System.currentTimeMillis();
     }
 
-    void updateSize(int width, int height) {
+    public void updateSize(int width, int height) {
         panelDim.setSize(width, height);
         player1.resizeUI(width, height);
         updateImage = null;
     }
 
-    void moveMapLocation(int dX, int dY, int maxWidth, int maxHeight) {
+    public void moveMapLocation(int dX, int dY, int maxWidth, int maxHeight) {
         mapX += dX;
         mapY += dY;
         if (mapX > 0) {
@@ -150,7 +152,6 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
 
         } else if (mE.getButton() == MouseEvent.BUTTON3) {
             Tile tile = map.getMouseTile(mE.getY(), mE.getX());
-            System.out.println("SDOIASD");
         }
         map.updateHighlight(mE);
         repaint();
@@ -221,13 +222,11 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         int keyCode = e.getKeyCode();
         switch (keyCode) {
             case KeyEvent.VK_ESCAPE:
-                System.out.println("_Key: Esc");
                 break;
             case KeyEvent.VK_SPACE:
                 player1.rotateTile();
                 break;
             case KeyEvent.VK_E:
-                System.out.println("_Key: E");
                 break;
         }
     }
