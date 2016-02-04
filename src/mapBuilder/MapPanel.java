@@ -20,7 +20,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
 
     private Dimension panelDim;
 
-    private Map map = new Map();
+    private Map map;
 
     int mapX = 0;
     int mapY = 0;
@@ -33,8 +33,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         setBackground(Color.BLACK);
         
         panelDim = dim;
-        
-        map.generateMap();
+        map = new Map();
         player1 = new Player(dim);
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -127,32 +126,45 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     @Override
     public void mouseReleased(MouseEvent mE) {
         if (mE.getButton() == MouseEvent.BUTTON1) {
-            Tile tile = map.getMouseTile(mE.getY(), mE.getX());
-
-            if (tile != null && player1.checkTile() != null) {
-                int currentRow = tile.getRow();
-                int currentCol = tile.getCol();
-
-                map.playerPlaceLand(player1, currentRow, currentCol);
-                //if (matchSurroundings(currentRow, currentCol, newLand)) createLand(currentRow, currentCol, newLand);
-                //createLand(new City(currentRow, currentCol, tH.getImage(TileHandler.CITY_E)));
+            pointX = mE.getX()-mapX;
+            pointY = mE.getY()-mapY;
+            TileStack tS = map.highlightStacks(pointX, pointY);
+            if (tS != null) {
+                Tile t = map.drawLand(tS);
+                player1.giveTile(t);
+                repaint();
             } else {
-                System.out.println("WARNING: No Tile to place!");
+                Tile tile = map.getMouseTile(mE.getY(), mE.getX());
+
+                if (tile != null && player1.checkTile() != null) {
+                    int currentRow = tile.getRow();
+                    int currentCol = tile.getCol();
+
+                    map.playerPlaceLand(player1, currentRow, currentCol);
+                } else {
+                    //Do Nothing
+                }
             }
+            
+            
 
         } else if (mE.getButton() == MouseEvent.BUTTON3) {
             Tile tile = map.getMouseTile(mE.getY(), mE.getX());
+            System.out.println("SDOIASD");
         }
         map.updateHighlight(mE);
         repaint();
     }
 
+    int pointX = 0;
+    int pointY = 0;
+    
     @Override
     public void mouseMoved(MouseEvent mME) {
         map.updateHighlight(mME);
         //map.getHi(mME);
-        int pointX = mME.getX()-mapX;
-        int pointY = mME.getY()-mapY;
+        pointX = mME.getX()-mapX;
+        pointY = mME.getY()-mapY;
         map.highlightStacks(pointX,pointY);
         
         repaint();
@@ -210,6 +222,10 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         switch (keyCode) {
             case KeyEvent.VK_ESCAPE:
                 System.out.println("_Key: Esc");
+                break;
+            case KeyEvent.VK_SPACE:
+                player1.rotateTile();
+                break;
             case KeyEvent.VK_E:
                 System.out.println("_Key: E");
                 break;
@@ -225,8 +241,8 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     public void menuInteracted(int menuItem) {
         switch (menuItem) {
             case MenubarListener.ITEM_DRAW:
-                Tile t = map.drawLand();
-                player1.giveTile(t);
+                //Tile t = map.drawLand();
+                //player1.giveTile(t);
                 repaint();
                 break;
             case MenubarListener.ITEM_ROTATE:

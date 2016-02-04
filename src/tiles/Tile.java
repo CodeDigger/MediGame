@@ -102,7 +102,11 @@ public class Tile {
         content = c;
     }
     
-    public int getAlignments() {
+    public int getAlignment() {
+        return alignment;
+    }
+    
+    public int getMaxAlignments() {
         return maxAlignments;
     }
 

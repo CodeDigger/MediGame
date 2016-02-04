@@ -22,7 +22,7 @@ public class Player {
     
     public void giveTile(Tile t) {
         toBePlaced = t;
-        uI.setTileImages(t.getAllImages());
+        uI.setTileImages(t.getAllImages(), t.getAlignment());
     }
     
     public Tile checkTile() {

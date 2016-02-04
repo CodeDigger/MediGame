@@ -26,8 +26,7 @@ public class Map {
     Image bgi;
     private TileHandler tH;
     
-    TileStack tileStack1;
-    TileStack tileStack2;
+    ArrayList<TileStack> stackList = new ArrayList();
 
     private Tile[][] tileArray;
     private Tile[] highlightedTiles = null;
@@ -49,18 +48,16 @@ public class Map {
         Image i1 = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/textures/Tiles-01.png"), 8*w, 1*h, 
                 w+3, h+5, w, h, w, h);
         
-        tileStack1 = new TileStack(i0, i1, 14);
-        tileStack1.moveStack(300, 400);
-        tileStack2 = new TileStack(i0, i1, 14);
-        tileStack2.moveStack(316, 499);
-        tileStack1.touchStack();
-        tileStack2.touchStack();
+        stackList.add(new TileStack(i0,i1,14,300,400));
+        stackList.add(new TileStack(i0,i1,14,214,490));
+        stackList.add(new TileStack(i0,i1,14,324,520));
+        stackList.add(new TileStack(i0,i1,14,286,618));
         
 
         generateMap();
     }
-    
-        public void generateMap() {
+
+    public void generateMap() {
         System.out.println("Generating Map:");
         System.out.println("- yCount: " + yCount + ", xCount: " + xCount);
         System.out.println("- Active tile types: " + TileHandler.DIFFERENT_TYPES);
@@ -78,7 +75,7 @@ public class Map {
         mapListeners.add(tL);
     }
 
-    public Tile drawLand() {
+    public Tile drawLand(TileStack tS) {
         int newTileType = 0;
         double d = Math.random();
         double div = (1.0 / TileHandler.DIFFERENT_TYPES);
@@ -104,8 +101,10 @@ public class Map {
         }
         System.out.println("Note: Draw: " + newTileType + " (" + div + "|" + d + ")");
         Tile t = initLand(newTileType);
-        tileStack1.drawStack();
-        tileStack2.drawStack();
+        tS.drawStack();
+        if (tS.getStackCount() == 0) {
+            stackList.remove(tS);
+        }
         return t;
     }
 
@@ -134,7 +133,7 @@ public class Map {
             toBePlaced = null;
             System.out.println("- [ERROR] -: Tile initiation failed!");
         }
-        int all = toBePlaced.getAlignments();
+        int all = toBePlaced.getMaxAlignments();
         Image[] images = new Image[all];
         for (int i = 0; i < all; i++) {
             images[i] = tH.getImage(newTileType+i);
@@ -155,6 +154,7 @@ public class Map {
     }
 
     boolean placeLand(Tile t, int row, int col) {
+        
         if (matchSurroundings(t, row, col)) {
             t.place(row, col);
             tileArray[row][col] = t;
@@ -192,8 +192,16 @@ public class Map {
     }
 
     private boolean matchSurroundings(Tile toBePlaced, int row, int col) {
+        Tile t = tileArray[row][col];
+        if (t != null) {
+            if (!t.isEmpty()) {
+                System.out.println("(WARNING): Occupied!");
+                return false;
+            }
+        }
+        
+        t = null;
         //UNDER
-        Tile t = null;
         if (row - 1 >= 0) {
             t = tileArray[row - 1][col];
         }
@@ -279,11 +287,10 @@ public class Map {
             }
         }
         
-        tileStack1.paintShadow(g);
-        tileStack2.paintShadow(g);
-        
-        tileStack1.paint(g);
-        tileStack2.paint(g);
+        for (TileStack tS : stackList) {
+            tS.paintShadow(g);
+            tS.paint(g);
+        }
 
         for (int row = 0; row < yCount; row++) {
             for (int col = 0; col < xCount; col++) {
@@ -369,9 +376,14 @@ public class Map {
         return tileArray[row][col];
     }
     
-    public void highlightStacks(int mX, int mY) {
-        tileStack1.checkHighlight(mX,mY);
-        tileStack2.checkHighlight(mX,mY);
+    public TileStack highlightStacks(int mX, int mY) {
+        for (TileStack tS : stackList) {
+            if (tS.checkHighlight(mX, mY)) {
+                return tS;
+            }
+        }
+        
+        return null;
     }
     
     public int getWidth() {

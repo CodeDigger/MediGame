@@ -29,9 +29,9 @@ public class UserInterface extends Canvas {
         tileUIborder = 10;
     }
     
-    public void setTileImages(Image[] imgs) {
+    public void setTileImages(Image[] imgs, int alignment) {
         tileImages = imgs;
-        currentImg = 0;
+        currentImg = alignment;
     }
     
     public void rotateTile() {

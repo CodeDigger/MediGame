@@ -7,7 +7,7 @@ public class C1R2A extends Tile {
     
     public C1R2A() {
         super();
-        maxAlignments = 2;
+        maxAlignments = 4;
         initContent();
     }
     
