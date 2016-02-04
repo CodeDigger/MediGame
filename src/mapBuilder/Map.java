@@ -56,8 +56,8 @@ public class Map {
 
         generateMap();
     }
-    
-        public void generateMap() {
+
+    public void generateMap() {
         System.out.println("Generating Map:");
         System.out.println("- yCount: " + yCount + ", xCount: " + xCount);
         System.out.println("- Active tile types: " + TileHandler.DIFFERENT_TYPES);
@@ -133,7 +133,7 @@ public class Map {
             toBePlaced = null;
             System.out.println("- [ERROR] -: Tile initiation failed!");
         }
-        int all = toBePlaced.getAlignments();
+        int all = toBePlaced.getMaxAlignments();
         Image[] images = new Image[all];
         for (int i = 0; i < all; i++) {
             images[i] = tH.getImage(newTileType+i);

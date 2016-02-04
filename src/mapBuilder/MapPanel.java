@@ -20,7 +20,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
 
     private Dimension panelDim;
 
-    private Map map = new Map();
+    private Map map;
 
     int mapX = 0;
     int mapY = 0;
@@ -33,8 +33,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         setBackground(Color.BLACK);
         
         panelDim = dim;
-        
-        map.generateMap();
+        map = new Map();
         player1 = new Player(dim);
         addMouseListener(this);
         addMouseMotionListener(this);
