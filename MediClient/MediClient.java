@@ -41,10 +41,10 @@ public class MediClient {
             System.out.println("You are client number: " + fromServer);
             clientIndex = fromServer;
 
-            if (clientIndex.equals("1")){
+            if (clientIndex.equals("0")){
                 state = WRITE;
             }
-            else if (clientIndex.equals("2")){
+            else {
                 state = WAIT;
             }
 

@@ -44,8 +44,6 @@ public class MediServer extends Thread {
                 new MediServerThread(serverSocket.accept(), mediProtocol, clientIndex++).start();
                 mediProtocol.newClientConnected();
                 System.out.println("SERVER: Client connected! The number of clients is: " + clientIndex);
-                
-                
             }
 
 
