@@ -20,6 +20,12 @@ public class ImageHandler {
         }
         return image;
     }
+    
+    public static Image loadScaleImage(String fileName, int width, int height) {
+        Image img = loadImage(fileName);
+        Image scaleCut = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return scaleCut;
+    }
 
     public static Image cutScaleImage(BufferedImage originalImage, int col, int row, int sW, int sH, int tW, int tH) {
         BufferedImage subImage = originalImage.getSubimage(col * sW, row * sH, sW, sH);

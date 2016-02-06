@@ -30,7 +30,7 @@ public class MediServer extends Thread {
     public MediServer(int portNumber, int numClients) {
         this.portNumber = portNumber;
         this.numClients = numClients;
-        clientIndex = 1;
+        clientIndex = 0;
         mediProtocol = new MediProtocol();
         
     }
@@ -39,10 +39,13 @@ public class MediServer extends Thread {
         
         try {
             ServerSocket serverSocket = new ServerSocket(portNumber);
-            System.out.println("The server is running on port: " + portNumber);
+            System.out.println("SERVER: The server is running on port: " + portNumber);
             while (listening) {
                 new MediServerThread(serverSocket.accept(), mediProtocol, clientIndex++).start();
-                System.out.println("Client connected! The number of clients is: " + clientIndex);
+                mediProtocol.newClientConnected();
+                System.out.println("SERVER: Client connected! The number of clients is: " + clientIndex);
+                
+                
             }
 
 
@@ -56,12 +59,4 @@ public class MediServer extends Thread {
         
     }
 
-    public static void main(String[] args) throws Exception {
-
-        if (args.length != 2) {
-            System.err.println("Usage: java MediServer <port number> <num clients>");
-            System.exit(1);
-        }
-        
-    }
 }

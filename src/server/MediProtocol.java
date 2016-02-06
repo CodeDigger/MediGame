@@ -5,17 +5,34 @@ package server;
  * Medi protocol class
  */
 public class MediProtocol {
-    public static final int CLIENT1 = 1;
-    public static final int CLIENT2 = 2;
+    int connectedClients;
+//    public static final int CLIENT1 = 0;
+//    public static final int CLIENT2 = 1;
     //public static final int CLIENT3 = 3;
     private final String DUMMYMESSAGE = "0";
 
     private boolean waitingForResponse = true;
-    private int activeClient = CLIENT1;
+    private int activeClient = 0;
 
     private String message1;
     private String message2;
     private String message;
+    
+    
+    public void changeConnectedClients(int i) {
+        connectedClients = i;
+        System.out.println("MediProtcol: "+connectedClients+" connected");
+    }
+    
+    public void newClientConnected() {
+        connectedClients++;
+        System.out.println("MediProtcol: "+connectedClients+" connected");
+    }
+    
+    public void clientDisconected() {
+        connectedClients--;
+        System.out.println("MediProtcol: "+connectedClients+" connected");
+    }
 
 
 //    public synchronized String client2Turn(String msg) {
@@ -76,11 +93,15 @@ public class MediProtocol {
     }
 
     private void nextActiveClient() {
-        if(activeClient == CLIENT1){
-            activeClient = CLIENT2;
+        activeClient++;
+        if (activeClient == connectedClients) {
+            activeClient = 0;
         }
-        else {
-            activeClient = CLIENT1;
-        }
+//        if(activeClient == CLIENT1){
+//            activeClient = CLIENT2;
+//        }
+//        else {
+//            activeClient = CLIENT1;
+//        }
     }
 }

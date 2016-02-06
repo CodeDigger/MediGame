@@ -1,5 +1,6 @@
 package menu;
 
+import client.ConnectWindow;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -13,6 +14,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import mapBuilder.*;
 import server.MediServer;
+import client.*;
+import java.awt.Graphics;
+import java.awt.Image;
 
 public class Main extends JFrame implements ComponentListener, ActionListener {
 
@@ -28,16 +32,21 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     Dimension menuDim;
     int frameBarHeight;
     boolean gameRunning = false;
-
+    
     ArrayList<JButton> buttonList = new ArrayList();
     JButton startTestButton;
     JButton startServerButton;
     JButton joinServerButton;
+    
+    MediClient mediClient;
 
     public Main() {
         super("Medi");
+        
+        setContentPane(new BackgroundPane("/textures/MenuBackground.jpg"));
+        
         setLayout(new FlowLayout(FlowLayout.CENTER));
-
+        
         startTestButton = new JButton("Start Test Mode");
         startServerButton = new JButton("Start Server");
         joinServerButton = new JButton("Join Server");
@@ -45,10 +54,14 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         buttonList.add(startServerButton);
         buttonList.add(joinServerButton);
         
+        
+        
         for (JButton jB : buttonList) {
             add(jB);
             jB.addActionListener(this);
         }
+        
+        
 
         pack();
 
@@ -56,7 +69,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
-
+    
+    
     private void setUpGame() {
         System.out.println(" - - -  SETTING UP GAME  - - - ");
         mapDim = new Dimension(initWidth, initHeight);
@@ -78,8 +92,11 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             pack();
             frameBarHeight = getHeight() - mapPanel.getHeight() - menuBar.getHeight();
             menuBar.initMapMenu(mapPanel);
+            componentResized(null);
 
             remove(startTestButton);
+            remove(startServerButton);
+            remove(joinServerButton);
         } else {
             System.out.println("- [ERROR] -: Unable to start game. Game not set up!");
         }
@@ -120,12 +137,16 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             startGame();
         } else if (e.getSource() == startServerButton) {
             server = new MediServer(4444, 2);
-            System.out.println("- - CREATING SERVER - -");
+            System.out.println("- CREATING SERVER:");
             server.start();
         } else if (e.getSource() == joinServerButton) {
             connectWindow = new ConnectWindow(this);
-        } else if (e.getSource() == connectWindow.connectButton) {
-            System.out.println("TRY CONNECT TO SERVER:");
+        } else if (e.getSource() == connectWindow.getConnectButton() ) {
+            System.out.println("- CONNECTING TO SERVER:");
+            String ip = connectWindow.getIP();
+            int port = connectWindow.getPort();
+            mediClient = new MediClient(ip, port);
+            connectWindow.dispose();
         }
 
     }
