@@ -1,5 +1,5 @@
 
-package mapBuilder;
+package tiles;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -7,7 +7,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
-import tiles.TileHandler;
 
 class StackPosition {
     int x = 0;
@@ -17,7 +16,6 @@ class StackPosition {
 
 public class TileStack {
     
-    Image bottomImg;
     Image stackImg;
     
     int w;
@@ -32,8 +30,7 @@ public class TileStack {
     ArrayList<StackPosition> stackPositions;
     boolean highlight = false;
     
-    public TileStack(Image bottomImg, Image stackImg, int i, int initX, int initY) {
-        this.bottomImg = bottomImg;
+    public TileStack(Image stackImg, int i, int initX, int initY) {
         this.stackImg = stackImg;
         w = TileHandler.getWidth();
         h = TileHandler.getHeight();
@@ -99,8 +96,6 @@ public class TileStack {
     }
     
     public void paint(Graphics g) {
-        g.drawImage(bottomImg, stackX, stackY, w+6, h+6,  null);
-        
         
         Graphics2D g2d = (Graphics2D) g;
         AffineTransform aT = new AffineTransform();

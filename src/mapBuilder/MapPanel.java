@@ -1,5 +1,6 @@
 package mapBuilder;
 
+import tiles.TileStack;
 import events.MenubarListener;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -21,7 +22,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
 
     private Dimension panelDim;
 
-    private Map map;
+    private MapHandler mapController;
 
     int mapX = 0;
     int mapY = 0;
@@ -35,7 +36,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         setPreferredSize(panelDim);
         setBackground(Color.BLACK);
         panelDim = dim;
-        map = new Map();
+        mapController = new MapHandler();
         player1 = new Player(dim);
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -53,10 +54,10 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     
     public void paintMap(Graphics g) {
         if (mapImage == null) {
-            mapImage = createVolatileImage(map.getWidth(), map.getHeight());
+            mapImage = createVolatileImage(mapController.getMapWidth(), mapController.getMapHeight());
             requestFocus();
         }
-        map.paint(mapImage.getGraphics());
+        mapController.paint(mapImage.getGraphics());
         g.drawImage(mapImage, mapX, mapY, this);
         
     }
@@ -116,16 +117,16 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         mapY += dY;
         if (mapX > 0) {
             mapX = 0;
-        } else if (mapX < (-map.getWidth() + maxWidth)) {
-            mapX = -map.getWidth() + maxWidth;
+        } else if (mapX < (-mapController.getMapWidth() + maxWidth)) {
+            mapX = -mapController.getMapWidth() + maxWidth;
         }
         if (mapY > 0) {
             mapY = 0;
-        } else if (mapY < (-map.getHeight() + maxHeight)) {
-            mapY = -map.getHeight() + maxHeight;
+        } else if (mapY < (-mapController.getMapHeight() + maxHeight)) {
+            mapY = -mapController.getMapHeight() + maxHeight;
         }
-        map.setMapX(mapX);
-        map.setMapY(mapY);
+        mapController.setMapX(mapX);
+        mapController.setMapY(mapY);
     }
 
     @Override
@@ -133,26 +134,26 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         if (mE.getButton() == MouseEvent.BUTTON1) {
             pointX = mE.getX() - mapX;
             pointY = mE.getY() - mapY;
-            TileStack tS = map.highlightStacks(pointX, pointY);
+            TileStack tS = mapController.highlightStacks(pointX, pointY);
             if (tS != null) {
-                Tile t = map.drawLand(tS);
+                Tile t = mapController.drawLand(tS);
                 player1.giveTile(t);
                 repaint();
             } else {
-                Tile tile = map.getMouseTile(mE.getY(), mE.getX());
+                Tile tile = mapController.getMouseTile(mE.getY(), mE.getX());
 
                 if (tile != null && player1.checkTile() != null) {
                     int currentRow = tile.getRow();
                     int currentCol = tile.getCol();
 
-                    map.playerPlaceLand(player1, currentRow, currentCol);
+                    mapController.playerPlaceLand(player1, currentRow, currentCol);
                 } else {
                     //Do Nothing
                 }
             }
 
         }
-        map.updateHighlight(mE);
+        mapController.updateHighlight(mE);
         repaint();
     }
 
@@ -161,11 +162,11 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     
     @Override
     public void mouseMoved(MouseEvent mME) {
-        map.updateHighlight(mME);
+        mapController.updateHighlight(mME);
         //map.getHi(mME);
         pointX = mME.getX()-mapX;
         pointY = mME.getY()-mapY;
-        map.highlightStacks(pointX,pointY);
+        mapController.highlightStacks(pointX,pointY);
         
         repaint();
     }
@@ -204,7 +205,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
             lastMouseX = mME.getX();
             lastMouseY = mME.getY();
         }
-        map.updateHighlight(mME);
+        mapController.updateHighlight(mME);
         repaint();
     }
 
