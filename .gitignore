@@ -1,4 +1,11 @@
 *.class
+*.xml
+
+#David's NetBeans Files
+manifest.mf 
+genfiles.properties
+project.properties
+
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
