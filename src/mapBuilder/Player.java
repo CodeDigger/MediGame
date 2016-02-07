@@ -44,7 +44,7 @@ public class Player {
     public static final int TILE_BOT = 0;
     
     public void resizeUI(int panelWidth, int panelHeight) {
-        uI.resize(panelWidth, panelHeight);
+        uI.setSize(panelWidth, panelHeight);
     }
     
     public void paintUI(Graphics g, ImageObserver imgOb) {
