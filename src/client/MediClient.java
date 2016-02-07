@@ -24,7 +24,6 @@ public class MediClient extends Thread {
     @Override
     public void run() {
 
-        int clientIndex;
         int state = WAIT;
 
         try (
@@ -37,19 +36,6 @@ public class MediClient extends Thread {
                     = new BufferedReader(new InputStreamReader(System.in));
             String fromServerString = "0";
             String fromUserString = "0";
-            int fromServerInt;
-            int fromUserInt;
-
-            //fromServerString = in.readLine();
-            fromServerInt = in.read();
-            System.out.println("You are client number: " + fromServerInt);
-            clientIndex = fromServerInt;
-
-            if (clientIndex == 1) {
-                state = PLAY;
-            } else {
-                state = WAIT;
-            }
 
             while (true) {
                 switch (state) {

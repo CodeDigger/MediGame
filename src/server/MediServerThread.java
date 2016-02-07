@@ -33,11 +33,6 @@ public class MediServerThread extends Thread {
         ) {
             String inputLine = "0";
             String outputLine = "0";
-            int outputInt;
-            //outputLine = Integer.toString(clientIndex);
-            outputInt = clientIndex;
-            //out.println(outputLine);
-            out.println(outputInt);
 
 
             while (true) {
