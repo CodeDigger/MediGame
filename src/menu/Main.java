@@ -1,68 +1,40 @@
 package menu;
 
-import client.ConnectWindow;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.util.ArrayList;
-import javax.swing.JButton;
 
 import javax.swing.JFrame;
 import mapBuilder.*;
 import server.MediServer;
 import client.*;
-import java.awt.Graphics;
-import java.awt.Image;
 
 public class Main extends JFrame implements ComponentListener, ActionListener {
 
     public static final int initWidth = 1200;
     public static final int initHeight = 600;
 
-    MediServer server;
+    
+    MainMenu mainMenu;
     MenuBar menuBar;
     MapPanel mapPanel;
+    MediServer server;
     ConnectWindow connectWindow;
+    MediClient mediClient;
 
     Dimension mapDim;
     Dimension menuDim;
     int frameBarHeight;
     boolean gameRunning = false;
-    
-    ArrayList<JButton> buttonList = new ArrayList();
-    JButton startTestButton;
-    JButton startServerButton;
-    JButton joinServerButton;
-    
-    MediClient mediClient;
 
     public Main() {
         super("Medi");
         
-        setContentPane(new BackgroundPane("/textures/MenuBackground.jpg"));
-        
-        setLayout(new FlowLayout(FlowLayout.CENTER));
-        
-        startTestButton = new JButton("Start Test Mode");
-        startServerButton = new JButton("Start Server");
-        joinServerButton = new JButton("Join Server");
-        buttonList.add(startTestButton);
-        buttonList.add(startServerButton);
-        buttonList.add(joinServerButton);
-        
-        
-        
-        for (JButton jB : buttonList) {
-            add(jB);
-            jB.addActionListener(this);
-        }
-        
-        
-
+        mainMenu = new MainMenu(this);
+        setContentPane(mainMenu);
         pack();
 
         addComponentListener(this);
@@ -83,9 +55,6 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
 
     private void startGame() {
         if (gameRunning) {
-            for (JButton jB : buttonList) {
-                remove(jB);
-            }
             setLayout(new BorderLayout());
             add(mapPanel, BorderLayout.CENTER);
             add(menuBar, BorderLayout.SOUTH);
@@ -93,10 +62,6 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             frameBarHeight = getHeight() - mapPanel.getHeight() - menuBar.getHeight();
             menuBar.initMapMenu(mapPanel);
             componentResized(null);
-
-            remove(startTestButton);
-            remove(startServerButton);
-            remove(joinServerButton);
         } else {
             System.out.println("- [ERROR] -: Unable to start game. Game not set up!");
         }
@@ -132,16 +97,16 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == startTestButton) {
+        if (e.getActionCommand().equals(MainMenu.START_TEST)) {
             setUpGame();
             startGame();
-        } else if (e.getSource() == startServerButton) {
+        } else if (e.getActionCommand().equals(MainMenu.START_SERVER)) {
             server = new MediServer(4444, 2);
             System.out.println("- CREATING SERVER:");
             server.start();
-        } else if (e.getSource() == joinServerButton) {
+        } else if (e.getActionCommand().equals(MainMenu.JOIN_SERVER)) {
             connectWindow = new ConnectWindow(this);
-        } else if (e.getSource() == connectWindow.getConnectButton() ) {
+        } else if (e.getSource() == connectWindow.getConnectButton()) {
             System.out.println("- CONNECTING TO SERVER:");
             String ip = connectWindow.getIP();
             int port = connectWindow.getPort();

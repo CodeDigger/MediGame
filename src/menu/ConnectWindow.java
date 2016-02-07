@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import menu.Main;
 
 /**
  *
@@ -19,15 +20,18 @@ import javax.swing.JTextField;
 public class ConnectWindow extends JFrame {
     
     JTextField ipTextField;
+    JTextField portTextField;
     JButton connectButton;
     
     public ConnectWindow (Main main) {
         
         setLayout(new FlowLayout(FlowLayout.CENTER));
-        ipTextField = new JTextField("0.0.0.0:port", 12);
+        ipTextField = new JTextField("0.0.0.0",10);
+        portTextField = new JTextField("Port", 4);
         connectButton = new JButton("Connect");
         connectButton.addActionListener(main);
         add(ipTextField);
+        add(portTextField);
         add(connectButton);
         
         pack();
@@ -35,6 +39,19 @@ public class ConnectWindow extends JFrame {
         setLocationRelativeTo(main);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
+    }
+    
+    public JButton getConnectButton() {
+        return connectButton;
+    }
+    
+    public String getIP() {
+        return ipTextField.getText();
+    }
+    
+    public int getPort() {
+        int p = Integer.parseInt(portTextField.getText());
+        return p;
     }
     
 }
