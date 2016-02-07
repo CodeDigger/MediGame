@@ -29,14 +29,15 @@ public class MediServerThread extends Thread {
     public void run() {
         try (
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(
-                                socket.getInputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
         ) {
             String inputLine = "0";
-            String outputLine;
-            outputLine = Integer.toString(clientIndex);
-            out.println(outputLine);
+            String outputLine = "0";
+            int outputInt;
+            //outputLine = Integer.toString(clientIndex);
+            outputInt = clientIndex;
+            //out.println(outputLine);
+            out.println(outputInt);
 
 
             while (true) {

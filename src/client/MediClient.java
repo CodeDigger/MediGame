@@ -9,71 +9,73 @@ import java.net.*;
  */
 public class MediClient extends Thread {
     private static final int WAIT = 1;
-    private static final int WRITE = 2;
-    
+    private static final int PLAY = 2;
+    private static final int UPDATE_BOARD = 3;
+
     String hostName;
     int portNumber;
-    
+
     public MediClient(String ip, int port) {
 
         hostName = ip;
         portNumber = port;
-        this.start();
     }
-    
+
     @Override
     public void run() {
-        
-        String clientIndex;
+
+        int clientIndex;
         int state = WAIT;
-        
+
         try (
                 Socket socket = new Socket(hostName, portNumber);
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));) {
+                        new InputStreamReader(socket.getInputStream()))
+        ) {
             BufferedReader stdIn
                     = new BufferedReader(new InputStreamReader(System.in));
-            String fromServer;
-            String fromUser = "0";
+            String fromServerString = "0";
+            String fromUserString = "0";
+            int fromServerInt;
+            int fromUserInt;
 
-            fromServer = in.readLine();
-            System.out.println("You are client number: " + fromServer);
-            clientIndex = fromServer;
+            //fromServerString = in.readLine();
+            fromServerInt = in.read();
+            System.out.println("You are client number: " + fromServerInt);
+            clientIndex = fromServerInt;
 
-            if (clientIndex.equals("1")) {
-                state = WRITE;
-            } else if (clientIndex.equals("2")) {
+            if (clientIndex == 1) {
+                state = PLAY;
+            } else {
                 state = WAIT;
             }
 
             while (true) {
                 switch (state) {
                     case WAIT:
-                        //while ((fromServer = in.readLine()) != null) {
-                        fromServer = in.readLine();
-                        System.out.println("Other guy: " + fromServer);
-                        if (fromServer.equals("Bye.")) {
+                        fromServerString = in.readLine();
+                        System.out.println("Other guy: " + fromServerString);
+                        if (fromServerString.equals("Bye.")) {
                             break;
                         }
-                        //}
-                        state = WRITE;
+                        state = PLAY;
                         break;
-                    case WRITE:
-                        fromUser = stdIn.readLine();
-                        if (fromUser != null) {
-                            System.out.println("You: " + fromUser);
-                            out.println(fromUser);
+                    case PLAY:
+                        fromUserString = stdIn.readLine();
+                        if (fromUserString != null) {
+                            System.out.println("You: " + fromUserString);
+                            out.println(fromUserString);
                         } else {
-                            fromUser = "DUMDUM";
-                            out.println(fromUser);
+                            fromUserString = "DUMDUM";
+                            out.println(fromUserString);
                         }
                         state = WAIT;
                         break;
                     default:
                         break;
                 }
-                if (fromServer.equals("Bye.") || fromUser.equals("Bye.")) {
+                if (fromServerString.equals("Bye.") || fromUserString.equals("Bye.")) {
                     break;
                 }
             }
@@ -88,5 +90,5 @@ public class MediClient extends Thread {
             System.exit(1);
         }
     }
-        
-    }
+
+}
