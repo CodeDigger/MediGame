@@ -17,7 +17,9 @@ public class EmptySpace extends Tile {
 	g.drawImage(img, x, y, null);	
         g.setColor(Color.DARK_GRAY);
         if (highlighted) {
-            g.setColor(Color.WHITE);
+            g.setColor(new Color(1.0f,1.0f,1.0f,0.1f));
+            g.fillRect(x+2, y+4, width, height);
+            g.setColor(new Color(1.0f,1.0f,1.0f,0.4f));
         }
         g.drawRect(x+2, y+4, width, height);
     }

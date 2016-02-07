@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import utilities.ImageHandler;
@@ -29,7 +28,7 @@ public class MainMenu extends JPanel  {
     public MainMenu(Main main) {
         super();
         
-        bgi = ImageHandler.loadImage("/textures/MenuBackground.jpg");
+        bgi = ImageHandler.loadImage("/resources/textures/MenuBackground.jpg");
         setPreferredSize(new Dimension(bgi.getWidth(this), bgi.getHeight(this)));
         
         setLayout(new FlowLayout(FlowLayout.CENTER));

@@ -18,7 +18,7 @@ public class MenuBar extends Panel implements ActionListener {
 
 	Dimension panelDim;
         private final ArrayList<MenubarListener> menubarListeners = new ArrayList<MenubarListener>();
-	Image bgi = ImageHandler.loadImage("/textures/MenuBar.png");
+	Image bgi = ImageHandler.loadImage("/resources/textures/MenuBar.png");
         Image currentDraw;
         int currentImageI;
         int currentAlignment;

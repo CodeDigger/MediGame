@@ -184,7 +184,7 @@ public class Tile {
         g.drawImage(img, x, y, null);
         //g.drawPolygon(polyX, polyY, 4);
         if (highlighted) {
-            g.setColor(Color.WHITE);
+            g.setColor(new Color(1.0f,1.0f,1.0f,0.5f) );
             g.drawRect(x, y, width, height);
         }
 

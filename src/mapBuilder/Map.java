@@ -29,23 +29,21 @@ public class Map {
     ArrayList<TileStack> stackList = new ArrayList();
 
     private Tile[][] tileArray;
-    private Tile[] highlightedTiles = null;
+    private Tile highlightedTile;
     private ArrayList<Tile> drawList = new ArrayList();
-
-    //private int newTileType = TileHandler.G4;
     
     private int screenX = 0;
     private int screenY = 0;
     
     public Map() {
-        bgi = ImageHandler.loadImage("/textures/wood_big.jpg");
+        bgi = ImageHandler.loadImage("/resources/textures/wood_big.jpg");
         tH = new TileHandler(100);
         
         int w = TileHandler.getWidth();
         int h = TileHandler.getHeight();
-        Image i0 = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/textures/Tiles-01.png"), 8*w, 1*h, 
+        Image i0 = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/resources/textures/Tiles-01.png"), 8*w, 1*h, 
                 w+8, h+10, w, h, w, h);
-        Image i1 = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/textures/Tiles-01.png"), 8*w, 1*h, 
+        Image i1 = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/resources/textures/Tiles-01.png"), 8*w, 1*h, 
                 w+3, h+5, w, h, w, h);
         
         stackList.add(new TileStack(i0,i1,14,300,400));
@@ -287,11 +285,6 @@ public class Map {
             }
         }
         
-        for (TileStack tS : stackList) {
-            tS.paintShadow(g);
-            tS.paint(g);
-        }
-
         for (int row = 0; row < yCount; row++) {
             for (int col = 0; col < xCount; col++) {
                 if (tileArray[row][col] != null) {
@@ -304,73 +297,53 @@ public class Map {
             }
         }
         
+        if (highlightedTile != null) {
+            if (highlightedTile.isEmpty()) {
+            highlightedTile.paint(g);
+            }
+        }
+
+        
+        for (TileStack tS : stackList) {
+            tS.paintShadow(g);
+            tS.paint(g);
+        }
+
+        
+        
         for (Tile t : drawList) {
             t.paint(g);
         }
         drawList.clear();
 
-        if (highlightedTiles != null) {
-            for (int i = 0; i < highlightedTiles.length; i++) {
-                highlightedTiles[i].paint(g);
+        if (highlightedTile != null) {
+            if (!highlightedTile.isEmpty()) {
+                highlightedTile.paint(g);
             }
         }
 
-    }
-
-    
-    void setHighlightedTiles(Tile mouseTile) {
-        if (highlightedTiles != null) {
-            for (int i = 0; i < highlightedTiles.length; i++) {
-                highlightedTiles[i].setHighLighted(false);
-            }
-        }
-        highlightedTiles = null;
-
-        if (mouseTile != null) {
-            /*int[] s = structSpace;
-             if (s[0]*s[1] == 1) {*/
-            highlightedTiles = new Tile[1];
-            highlightedTiles[0] = mouseTile;
-            /*} else if (s[0]*s[1] > 1) {
-             int t = (s[0]*s[1]);
-             highlightedTiles = new Tile[t];
-             int y = mouseTile.getRow();
-             int x = mouseTile.getCol();
-             int c = 0;
-             for (int a = 0; a < s[1]; a++) {
-             int tempY = y;
-             int tempX = x;
-             for (int b = 0; b < s[0]; b++) {
-             highlightedTiles[c] = getTile(tempY, tempX);
-             tempY--;
-             if (tempY % 2 == 1) tempX--;
-             c++;
-             }
-             y--;
-             if (y %2 == 0) x++;
-             }
-             }*/
-            for (int i = 0; i < highlightedTiles.length; i++) {
-                highlightedTiles[i].setHighLighted(true);
-            }
-        }
     }
 
     void updateHighlight(MouseEvent mME) {
         Tile newTile = getMouseTile(mME.getY(), mME.getX());
-        if (newTile != null) {
-            if (highlightedTiles == null || newTile != highlightedTiles[0]) {
-                setHighlightedTiles(newTile);
+        
+        if (newTile != null && highlightedTile != null) {
+            if (!highlightedTile.equals(newTile)) {
+                highlightedTile.setHighLighted(false);
+                highlightedTile = newTile;
+                highlightedTile.setHighLighted(true);
             }
-        } else {
-            if (highlightedTiles != null) {
-                for (int i = 0; i < highlightedTiles.length; i++) {
-                    highlightedTiles[i].setHighLighted(false);
-                }
-            }
-            highlightedTiles = null;
+        } else if (newTile != null) {
+            highlightedTile = newTile;
+            highlightedTile.setHighLighted(true);
+        } else if (highlightedTile != null) {
+            highlightedTile.setHighLighted(false);
+            highlightedTile = null;
         }
     }
+
+
+
 
     public Tile getTile(int row, int col) {
         return tileArray[row][col];

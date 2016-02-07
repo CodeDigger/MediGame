@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import tiles.Tile;
+import utilities.AudioHandler;
 
 public class MapPanel extends Panel implements MouseListener, MouseMotionListener, KeyListener, MenubarListener {
 
@@ -25,7 +26,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     int mapX = 0;
     int mapY = 0;
 
-    
+    AudioHandler audioHandler;
     
     Player player1;
 
@@ -33,13 +34,15 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         panelDim = new Dimension(dim);
         setPreferredSize(panelDim);
         setBackground(Color.BLACK);
-        
         panelDim = dim;
         map = new Map();
         player1 = new Player(dim);
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
+        
+        audioHandler = new AudioHandler();
+        audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");
     }
 
     VolatileImage mapImage = null;
@@ -128,8 +131,8 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     @Override
     public void mouseReleased(MouseEvent mE) {
         if (mE.getButton() == MouseEvent.BUTTON1) {
-            pointX = mE.getX()-mapX;
-            pointY = mE.getY()-mapY;
+            pointX = mE.getX() - mapX;
+            pointY = mE.getY() - mapY;
             TileStack tS = map.highlightStacks(pointX, pointY);
             if (tS != null) {
                 Tile t = map.drawLand(tS);
@@ -147,11 +150,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
                     //Do Nothing
                 }
             }
-            
-            
 
-        } else if (mE.getButton() == MouseEvent.BUTTON3) {
-            Tile tile = map.getMouseTile(mE.getY(), mE.getX());
         }
         map.updateHighlight(mE);
         repaint();
@@ -173,9 +172,6 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON3) {
-
-        }
     }
 
     @Override

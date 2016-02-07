@@ -3,6 +3,7 @@ package utilities;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Created by Tobias on 2016-02-07.
@@ -20,18 +21,18 @@ public class AudioHandler{
      * Play a given audio file.
      * @param audioFilePath Path of the audio file.
      */
-    void play(String audioFilePath) {
+    public void play(String audioFilePath) {
 
         new AudioHandlerThread(audioFilePath).start();
     }
 
     private class AudioHandlerThread extends Thread implements LineListener{
-        String audioFilePath;
+        URL audioFilePath;
         File audioFile;
 
         public AudioHandlerThread(String audioFilePath) {
 
-            this.audioFilePath = audioFilePath;
+            this.audioFilePath = AudioHandler.class.getResource(audioFilePath);
             audioFile = new File(audioFilePath);
         }
 
@@ -39,7 +40,7 @@ public class AudioHandler{
         public void run() {
 
             try {
-                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+                AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFilePath);
 
                 AudioFormat format = audioStream.getFormat();
 
@@ -50,8 +51,8 @@ public class AudioHandler{
                 audioClip.addLineListener(this);
 
                 audioClip.open(audioStream);
-
-                audioClip.start();
+                
+                audioClip.loop(10);
 
                 while (!playCompleted) {
                     // wait for the playback completes

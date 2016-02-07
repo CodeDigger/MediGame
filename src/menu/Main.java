@@ -34,7 +34,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         super("Medi");
         
         mainMenu = new MainMenu(this);
-        setContentPane(mainMenu);
+        add(mainMenu);
         pack();
 
         addComponentListener(this);
@@ -44,6 +44,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     
     
     private void setUpGame() {
+        remove(mainMenu);
+        mainMenu = null;
         System.out.println(" - - -  SETTING UP GAME  - - - ");
         mapDim = new Dimension(initWidth, initHeight);
         menuDim = new Dimension(mapDim.width, 80);
@@ -65,6 +67,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         } else {
             System.out.println("- [ERROR] -: Unable to start game. Game not set up!");
         }
+        pack();
     }
 
     public static void main(String[] args) {
