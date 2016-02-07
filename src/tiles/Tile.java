@@ -174,18 +174,16 @@ public class Tile {
     }
 
     public void paint(Graphics g) {
-        /*if (highlighted) {
-         g.setColor(Color.WHITE);
-         } else {
-         g.setColor(Color.DARK_GRAY);
-         }*/
-        g.drawImage(borderRight, x + width, y, null);
-        g.drawImage(borderBot, x, y + height, null);
-        g.drawImage(img, x, y, null);
-        //g.drawPolygon(polyX, polyY, 4);
         if (highlighted) {
-            g.setColor(new Color(1.0f,1.0f,1.0f,0.5f) );
-            g.drawRect(x, y, width, height);
+            g.drawImage(borderRight, x + width-3, y-4, null);
+            g.drawImage(borderBot, x-3, y + height-4, null);
+            g.drawImage(img, x-3, y-4, null);
+//            g.setColor(new Color(1.0f,1.0f,1.0f,0.5f) );
+//            g.drawRect(x-2, y-4, width, height);
+        } else {
+            g.drawImage(borderRight, x + width, y, null);
+            g.drawImage(borderBot, x, y + height, null);
+            g.drawImage(img, x, y, null);
         }
 
     }
