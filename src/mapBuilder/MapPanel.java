@@ -184,7 +184,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (e.getButton() == MouseEvent.BUTTON3) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             lastMouseX = e.getX();
             lastMouseY = e.getY();
         }
@@ -195,7 +195,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
 
     @Override
     public void mouseDragged(MouseEvent mME) {
-        if (mME.getButton() == MouseEvent.BUTTON3) {
+        if (mME.getButton() == MouseEvent.BUTTON1) {
             int dX = (int) (mME.getX() - lastMouseX);
             int dY = (int) (mME.getY() - lastMouseY);
 
