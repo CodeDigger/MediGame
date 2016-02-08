@@ -28,7 +28,7 @@ public class MainMenu extends JPanel  {
     public MainMenu(Main main) {
         super();
         
-        bgi = ImageHandler.loadImage("/resources/textures/MenuBackground.jpg");
+        bgi = ImageHandler.loadImage("/resources/textures/MenuBackground2.jpg");
         setPreferredSize(new Dimension(bgi.getWidth(this), bgi.getHeight(this)));
         
         setLayout(new FlowLayout(FlowLayout.CENTER));

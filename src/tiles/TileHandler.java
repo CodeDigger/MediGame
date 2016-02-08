@@ -32,7 +32,7 @@ public class TileHandler {
     public static final int DIFFERENT_TYPES = 9;
 
     public TileHandler(int tileSprites) {
-        tileTextures = ImageHandler.loadImage("/resources/textures/Tiles-02.png");;
+        tileTextures = ImageHandler.loadImage("/resources/textures/Tiles-03.png");;
         initImages(tileSprites);
     }
 
