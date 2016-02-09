@@ -24,6 +24,7 @@ public class MediServerThread extends Thread {
         this.socket = socket;
         this.mediProtocol = mediProtocol;
         this.clientIndex = clientIndex;
+        System.out.println("Remote socket: " + this.socket.getRemoteSocketAddress().toString());
     }
 
     public void run() {
@@ -49,15 +50,15 @@ public class MediServerThread extends Thread {
 
                 switch (state) {
                     case TRANSMIT:
-                        outputLine = mediProtocol.getMessage();
-                        out.println(outputLine);
+                        outputLine = mediProtocol.getMessageFromServer(); //Waits for the server to give a message to client
+                        out.println(outputLine); //Send the message to the client
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {}
                         break;
                     case RECEIVE:
-                        inputLine = in.readLine();
-                        mediProtocol.setMessage(inputLine);
+                        inputLine = in.readLine(); //Read request from client.
+                        mediProtocol.handleClientRequest(inputLine); //Give the protocol the request to handle it
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {}
@@ -66,10 +67,10 @@ public class MediServerThread extends Thread {
                         break;
                 }
 
-                if (outputLine.equals("Bye.") || inputLine.equals("Bye."))
-                    break;
+                /*if (outputLine.equals("Bye.") || inputLine.equals("Bye."))
+                    break;*/
             }
-            socket.close();
+            //socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,5 +1,7 @@
 package server;
 
+import com.sun.xml.internal.bind.v2.TODO;
+
 /**
  * Created by Tobias on 2015-07-30.
  * Medi protocol class
@@ -11,28 +13,8 @@ public class MediProtocol {
     private int activeClient = 0;
 
     private String message;
-    
-    
-    public void changeConnectedClients(int i) {
-        connectedClients = i;
-        System.out.println("MediProtcol: "+connectedClients+" connected");
-    }
-    
-    public void newClientConnected() {
-        connectedClients++;
-        System.out.println("MediProtcol: "+connectedClients+" connected");
-    }
-    
-    public void clientDisconected() {
-        connectedClients--;
-        System.out.println("MediProtcol: "+connectedClients+" connected");
-    }
 
-    public int getActiveClient() {
-        return activeClient;
-    }
-
-    public synchronized void setMessage(String message) {
+    public synchronized void handleClientRequest(String message) {
         while(!waitingForResponse){
             try {
                 wait();
@@ -40,11 +22,12 @@ public class MediProtocol {
         }
         waitingForResponse = false;
         this.message = message;
+        //TODO Handle the client request
         nextActiveClient();
         notifyAll();
     }
 
-    public synchronized String getMessage() {
+    public synchronized String getMessageFromServer() {
         while(waitingForResponse){
             try {
                 wait();
@@ -60,5 +43,24 @@ public class MediProtocol {
         if (activeClient == connectedClients) {
             activeClient = 0;
         }
+    }
+
+    public void setConnectedClients(int i) {
+        connectedClients = i;
+        System.out.println("MediProtcol: "+connectedClients+" connected");
+    }
+
+    public void newClientConnected() {
+        connectedClients++;
+        System.out.println("MediProtcol: " + connectedClients + " connected");
+    }
+
+    public void clientDisconected() {
+        connectedClients--;
+        System.out.println("MediProtcol: " + connectedClients + " connected");
+    }
+
+    public synchronized int getActiveClient() {
+        return activeClient;
     }
 }
