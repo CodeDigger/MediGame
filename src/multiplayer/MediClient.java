@@ -52,7 +52,7 @@ public class MediClient extends Thread {
                         int[] packet = DataPacketHandler.handlePacket(fromServerString);
                         switch (packet[0]) {
                             case DataPacketHandler.PACKETTYPE_STATUSUPDATE:
-                                //TODO Handle client status update
+                                state = packet[1];
                                 break;
                             case DataPacketHandler.PACKETTYPE_TILEREQUEST:
                                 //TODO Handle client requesting tile
