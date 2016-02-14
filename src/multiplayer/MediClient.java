@@ -1,9 +1,10 @@
-package client;
+package multiplayer;
 
-import server.DataPacketHandler;
+import multiplayer.DataPacketHandler;
 
 import java.io.*;
 import java.net.*;
+import mapBuilder.Player;
 
 /**
  * Created by Tobias on 2015-07-30.
@@ -16,11 +17,12 @@ public class MediClient extends Thread {
 
     String hostName;
     int portNumber;
+    Player player;
 
     public MediClient(String ip, int port) {
-
         hostName = ip;
         portNumber = port;
+        player = new Player("Player Name");
     }
 
     @Override
@@ -46,7 +48,26 @@ public class MediClient extends Thread {
                         fromServerString = in.readLine();
                         System.out.println("CLIENT - From server: " + fromServerString);
                         //TODO Handle the server message. For now the server sets the state
-                        state = DataPacketHandler.handlePacket(fromServerString);
+                        
+                        int[] packet = DataPacketHandler.handlePacket(fromServerString);
+                        switch (packet[0]) {
+                            case DataPacketHandler.PACKETTYPE_STATUSUPDATE:
+                                //TODO Handle client status update
+                                break;
+                            case DataPacketHandler.PACKETTYPE_TILEREQUEST:
+                                //TODO Handle client requesting tile
+                                break;
+                            case DataPacketHandler.PACKETTYPE_TILEDELIVERY:
+                                //TODO Handle tile delivery to client
+                                break;
+                            case DataPacketHandler.PACKETTYPE_TILEPLACEMENT:
+                                //TODO Handle players tile placement
+                                break;
+                            default:
+                                // Do nothing (?)
+                                break;
+                        }
+                        
                         break;
                     case PLAY:
                         System.out.println("CLIENT - Current state is PLAY");

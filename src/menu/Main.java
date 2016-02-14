@@ -1,5 +1,6 @@
 package menu;
 
+import multiplayer.MediClient;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -9,8 +10,7 @@ import java.awt.event.ComponentListener;
 
 import javax.swing.JFrame;
 import mapBuilder.*;
-import server.MediServer;
-import client.*;
+import multiplayer.MediServer;
 
 public class Main extends JFrame implements ComponentListener, ActionListener {
 

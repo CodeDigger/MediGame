@@ -1,4 +1,4 @@
-package server;
+package multiplayer;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;

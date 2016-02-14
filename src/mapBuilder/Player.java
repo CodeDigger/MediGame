@@ -11,11 +11,16 @@ public class Player {
     
     private Tile toBePlaced = null;
     private int placeAlignment = 0;
+    String playerName = "NoName";
     UserInterface uI;
     
     public Player(Dimension dim) {
         uI = new UserInterface(dim);
         
+    }
+    
+    public Player(String name) {
+        playerName = name;
     }
     
     public void giveTile(Tile t) {

@@ -1,4 +1,4 @@
-package server;
+package multiplayer;
 
 import java.net.*;
 import java.io.*;

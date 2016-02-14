@@ -1,4 +1,4 @@
-package server;
+package multiplayer;
 
 /**
  * Created by Tobias on 2015-07-30.
