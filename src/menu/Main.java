@@ -113,7 +113,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             System.out.println("- CONNECTING TO SERVER:");
             String ip = connectWindow.getIP();
             int port = connectWindow.getPort();
-            mediClient = new MediClient(ip, port);
+            new MediClient(ip, port).start();
             connectWindow.dispose();
         }
 

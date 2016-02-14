@@ -33,11 +33,11 @@ public class MediClient {
         ) {
             BufferedReader stdIn =
                     new BufferedReader(new InputStreamReader(System.in));
-            String fromServer;
+            String fromServer = "0";
             String fromUser = "0";
 
 
-            fromServer = in.readLine();
+            //fromServer = in.readLine();
             System.out.println("You are client number: " + fromServer);
             clientIndex = fromServer;
 

@@ -53,7 +53,7 @@ public class MapHandler {
         
         int w = TileHandler.getWidth();
         int h = TileHandler.getHeight();
-        Image stackImg = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/resources/textures/Tiles-02.png"), 8*w, 1*h, 
+        Image stackImg = ImageHandler.cutScaleImageByPixels(ImageHandler.loadImage("/resources/textures/Tiles-03.png"), 8*w, 1*h,
                 w+8, h+10, w, h, w, h);
         
         map.addTileStack(new TileStack(stackImg,14,300,400));
