@@ -1,5 +1,7 @@
 package server;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,14 +15,15 @@ import java.net.Socket;
  * Server thread class
  */
 public class MediServerThread extends Thread {
-    private static final int RECEIVE = 1;
-    private static final int TRANSMIT = 2;
+    private static final int RECEIVE_CLIENT = 1;
+    private static final int RECEIVE_SERVER = 2;
     private Socket socket = null;
     private MediProtocol mediProtocol;
     private int clientIndex;
 
     public MediServerThread(Socket socket, MediProtocol mediProtocol, int clientIndex) {
-        super("MediServerThread");
+        super("MediServerThread "+clientIndex);
+        System.out.println("******* Client Connecting... ******");
         this.socket = socket;
         this.mediProtocol = mediProtocol;
         this.clientIndex = clientIndex;
@@ -40,33 +43,32 @@ public class MediServerThread extends Thread {
             while (true) {
 
                 int activeClient = mediProtocol.getActiveClient();
+                System.out.println("THREAD "+clientIndex+" - ActiveClient set to: "+activeClient);
                 int state;
                 
                 if (activeClient == clientIndex){
-                    state = RECEIVE;
+                    state = RECEIVE_CLIENT;
                     out.println(DataPacketHandler.createStatusUpdatePackage(DataPacketHandler.STATUS_PLAY));
                 }
                 else {
-                    state = TRANSMIT;
+                    state = RECEIVE_SERVER;
                 }
 
                 switch (state) {
-                    case TRANSMIT:
-                        System.out.println("Thread " + clientIndex + " in TRANSMIT");
-                        outputLine = mediProtocol.getMessageFromServer(); //Waits for the server to give a message to client
+                    case RECEIVE_SERVER:
+                        System.out.println("THREAD "+ clientIndex + ": RECEIVE_SERVER");
+                        outputLine = mediProtocol.getMessage(); //Waits for the server to give a message to client
                         out.println(outputLine); //Send the message to the client
-                        System.out.println("Thread: " + clientIndex + " sent: " + outputLine);
                         try {
-                            Thread.sleep(1000);
+                            this.sleep(100);
                         } catch (InterruptedException e) {}
                         break;
-                    case RECEIVE:
-                        System.out.println("Thread in RECEIVE " + clientIndex);
+                    case RECEIVE_CLIENT:
+                        System.out.println("THREAD "+ clientIndex + ": RECEIVE_CLIENT");
                         inputLine = in.readLine(); //Read request from client.
-                        System.out.println("Thread: " + clientIndex + " received: " + inputLine);
                         mediProtocol.handleClientRequest(inputLine); //Give the protocol the request to handle it
                         try {
-                            Thread.sleep(1000);
+                            this.sleep(100);
                         } catch (InterruptedException e) {}
                         break;
                     default:

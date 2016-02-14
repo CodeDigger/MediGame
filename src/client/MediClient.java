@@ -42,17 +42,16 @@ public class MediClient extends Thread {
             while (true) {
                 switch (state) {
                     case WAIT:
-                        System.out.println("WAIT");
+                        System.out.println("CLIENT - Current state is WAIT");
                         fromServerString = in.readLine();
-                        System.out.println("Server: " + fromServerString);
+                        System.out.println("CLIENT - From server: " + fromServerString);
                         //TODO Handle the server message. For now the server sets the state
                         state = DataPacketHandler.handlePacket(fromServerString);
                         break;
                     case PLAY:
-                        System.out.println("PLAY!");
+                        System.out.println("CLIENT - Current state is PLAY");
                         fromUserString = stdIn.readLine();
                         if (fromUserString != null) {
-                            System.out.println("You: " + fromUserString);
                             out.println(fromUserString);
                         } else {
                             fromUserString = "DUMDUM";

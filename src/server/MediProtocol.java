@@ -1,7 +1,5 @@
 package server;
 
-import com.sun.xml.internal.bind.v2.TODO;
-
 /**
  * Created by Tobias on 2015-07-30.
  * Medi protocol class
@@ -15,11 +13,14 @@ public class MediProtocol {
     private String message;
 
     public synchronized void handleClientRequest(String message) {
-        while(!waitingForResponse){
-            try {
-                wait();
-            } catch (InterruptedException e) {}
-        }
+//        while(!waitingForResponse){
+//            try {
+//                wait();
+//            } catch (InterruptedException e) {}
+//        }
+//        try {
+//                wait();
+//            } catch (InterruptedException e) {}
         waitingForResponse = false;
         this.message = message;
         System.out.println("Client: " + activeClient + " played " + message);
@@ -28,12 +29,15 @@ public class MediProtocol {
         notifyAll();
     }
 
-    public synchronized String getMessageFromServer() {
-        while(waitingForResponse){
-            try {
+    public synchronized String getMessage() {
+//        while(waitingForResponse){
+//            try {
+//                wait();
+//            } catch (InterruptedException e) {}
+//        }
+        try {
                 wait();
             } catch (InterruptedException e) {}
-        }
         waitingForResponse = true;
         notifyAll();
         return message;
@@ -41,7 +45,7 @@ public class MediProtocol {
 
     private void nextActiveClient() {
         activeClient++;
-        if (activeClient == connectedClients) {
+        if (activeClient >= connectedClients) {
             activeClient = 0;
         }
     }

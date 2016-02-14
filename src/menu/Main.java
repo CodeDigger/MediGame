@@ -110,9 +110,9 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         } else if (e.getActionCommand().equals(MainMenu.JOIN_SERVER)) {
             connectWindow = new ConnectWindow(this);
         } else if (e.getSource() == connectWindow.getConnectButton()) {
-            System.out.println("- CONNECTING TO SERVER:");
             String ip = connectWindow.getIP();
             int port = connectWindow.getPort();
+            System.out.println("CLIENT: Connecting to server: "+ip+":"+port);
             new MediClient(ip, port).start();
             connectWindow.dispose();
         }

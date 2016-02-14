@@ -2,6 +2,7 @@ package server;
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -25,14 +26,14 @@ public class MediServer extends Thread {
     boolean listening = true;
     MediProtocol mediProtocol;
     int clientIndex;
-    
+    ArrayList<MediServerThread> threadList = new ArrayList();
     
     public MediServer(int portNumber, int numClients) {
+        super("MediServer");
         this.portNumber = portNumber;
         this.numClients = numClients;
         clientIndex = 0;
         mediProtocol = new MediProtocol();
-        
     }
     
     public void run() {
@@ -44,6 +45,7 @@ public class MediServer extends Thread {
                 new MediServerThread(serverSocket.accept(), mediProtocol, clientIndex++).start();
                 mediProtocol.newClientConnected();
                 System.out.println("SERVER: Client connected! The number of clients is: " + clientIndex);
+                System.out.println("***********************************");
             }
         }
         catch (IOException e) {
@@ -51,7 +53,6 @@ public class MediServer extends Thread {
                     + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
         }
-        
         
     }
 
