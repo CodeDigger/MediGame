@@ -31,7 +31,7 @@ public class MapHandler {
     public MapHandler() {
         bgi = ImageHandler.loadImage("/resources/textures/wood_big.jpg");
         tH = new TileHandler(100);
-
+        
         generateMap();
     }
 
@@ -61,7 +61,8 @@ public class MapHandler {
         map.addTileStack(new TileStack(stackImg,14,324,520));
         map.addTileStack(new TileStack(stackImg,14,286,618));
 
-        Tile t = initLand(TileHandler.G4);
+        Tile t = initLand(TileHandler.C1R2A);
+        t.rotate();
         placeLand(t, centerRow, centerCol);
     }
         
