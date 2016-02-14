@@ -27,13 +27,14 @@ public class MediServerThread extends Thread {
         System.out.println("Remote socket: " + this.socket.getRemoteSocketAddress().toString());
     }
 
+    @Override
     public void run() {
         try (
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
         ) {
-            String inputLine = "0";
-            String outputLine = "0";
+            String inputLine;
+            String outputLine;
 
 
             while (true) {
@@ -43,6 +44,7 @@ public class MediServerThread extends Thread {
                 
                 if (activeClient == clientIndex){
                     state = RECEIVE;
+                    out.println(DataPacketHandler.createStatusUpdatePackage(DataPacketHandler.STATUS_PLAY));
                 }
                 else {
                     state = TRANSMIT;
@@ -50,14 +52,18 @@ public class MediServerThread extends Thread {
 
                 switch (state) {
                     case TRANSMIT:
+                        System.out.println("Thread " + clientIndex + " in TRANSMIT");
                         outputLine = mediProtocol.getMessageFromServer(); //Waits for the server to give a message to client
                         out.println(outputLine); //Send the message to the client
+                        System.out.println("Thread: " + clientIndex + " sent: " + outputLine);
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {}
                         break;
                     case RECEIVE:
+                        System.out.println("Thread in RECEIVE " + clientIndex);
                         inputLine = in.readLine(); //Read request from client.
+                        System.out.println("Thread: " + clientIndex + " received: " + inputLine);
                         mediProtocol.handleClientRequest(inputLine); //Give the protocol the request to handle it
                         try {
                             Thread.sleep(1000);
@@ -66,9 +72,6 @@ public class MediServerThread extends Thread {
                     default:
                         break;
                 }
-
-                /*if (outputLine.equals("Bye.") || inputLine.equals("Bye."))
-                    break;*/
             }
             //socket.close();
         } catch (IOException e) {

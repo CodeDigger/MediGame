@@ -26,8 +26,8 @@ public class ConnectWindow extends JFrame {
     public ConnectWindow (Main main) {
         
         setLayout(new FlowLayout(FlowLayout.CENTER));
-        ipTextField = new JTextField("0.0.0.0",10);
-        portTextField = new JTextField("Port", 4);
+        ipTextField = new JTextField("192.168.1.92",10);
+        portTextField = new JTextField("4444", 4);
         connectButton = new JButton("Connect");
         connectButton.addActionListener(main);
         add(ipTextField);

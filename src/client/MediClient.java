@@ -1,5 +1,7 @@
 package client;
 
+import server.DataPacketHandler;
+
 import java.io.*;
 import java.net.*;
 
@@ -8,9 +10,9 @@ import java.net.*;
  * Medi client class
  */
 public class MediClient extends Thread {
-    private static final int WAIT = 1;
-    private static final int PLAY = 2;
-    private static final int UPDATE_BOARD = 3;
+    private static final int WAIT = 0;
+    private static final int PLAY = 1;
+    private static final int UPDATE_BOARD = 2;
 
     String hostName;
     int portNumber;
@@ -40,14 +42,14 @@ public class MediClient extends Thread {
             while (true) {
                 switch (state) {
                     case WAIT:
+                        System.out.println("WAIT");
                         fromServerString = in.readLine();
-                        System.out.println("Other guy: " + fromServerString);
-                        if (fromServerString.equals("Bye.")) {
-                            break;
-                        }
-                        state = PLAY;
+                        System.out.println("Server: " + fromServerString);
+                        //TODO Handle the server message. For now the server sets the state
+                        state = DataPacketHandler.handlePacket(fromServerString);
                         break;
                     case PLAY:
+                        System.out.println("PLAY!");
                         fromUserString = stdIn.readLine();
                         if (fromUserString != null) {
                             System.out.println("You: " + fromUserString);
@@ -58,11 +60,12 @@ public class MediClient extends Thread {
                         }
                         state = WAIT;
                         break;
+                    case UPDATE_BOARD:
+                        //TODO Update the board
+                        state = WAIT;
+                        break;
                     default:
                         break;
-                }
-                if (fromServerString.equals("Bye.") || fromUserString.equals("Bye.")) {
-                    break;
                 }
             }
 
@@ -76,5 +79,4 @@ public class MediClient extends Thread {
             System.exit(1);
         }
     }
-
 }

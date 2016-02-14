@@ -22,6 +22,7 @@ public class MediProtocol {
         }
         waitingForResponse = false;
         this.message = message;
+        System.out.println("Client: " + activeClient + " played " + message);
         //TODO Handle the client request
         nextActiveClient();
         notifyAll();

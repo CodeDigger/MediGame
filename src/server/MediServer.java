@@ -45,8 +45,6 @@ public class MediServer extends Thread {
                 mediProtocol.newClientConnected();
                 System.out.println("SERVER: Client connected! The number of clients is: " + clientIndex);
             }
-
-
         }
         catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port "
