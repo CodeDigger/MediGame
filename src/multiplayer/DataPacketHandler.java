@@ -42,6 +42,7 @@ public class DataPacketHandler {
             case PACKETTYPE_TILEDELIVERY:
                 int tileDeliveryType = Integer.getInteger(packet.substring(2, packet.length()-1));
                 returnInt = new int[]{PACKETTYPE_TILEDELIVERY, tileDeliveryType};
+                break;
             case PACKETTYPE_TILEPLACEMENT:
                 
                 int[] divider = new int[4];
@@ -59,7 +60,6 @@ public class DataPacketHandler {
                 returnInt = new int[]{PACKETTYPE_TILEPLACEMENT,row,col,tileType,tileAlignment};
                 
                 break;
-            
             default:
                 returnInt = new int[]{0,0};
                 break;
