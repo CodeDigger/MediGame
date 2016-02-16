@@ -1,6 +1,7 @@
 
-package mapBuilder;
+package testMode;
 
+import mapBuilder.*;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,7 +10,7 @@ import java.awt.Image;
 import java.awt.image.ImageObserver;
 
 
-public class UserInterface extends Canvas {
+public class TmUserInterface extends Canvas {
     
     public Image[] tileImages;
     int currentImg;
@@ -21,7 +22,7 @@ public class UserInterface extends Canvas {
     int tileUIborder;
     
     
-    public UserInterface(Dimension dim) {
+    public TmUserInterface(Dimension dim) {
         super.setSize(dim);
         borderSize = 20;
         tileUIwidth = 200;

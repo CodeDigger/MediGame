@@ -9,8 +9,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
 import javax.swing.JFrame;
-import mapBuilder.*;
 import multiplayer.MediServer;
+import testMode.TmMapPanel;
+import testMode.TmMenuBar;
 
 public class Main extends JFrame implements ComponentListener, ActionListener {
 
@@ -19,8 +20,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
 
     
     MainMenu mainMenu;
-    MenuBar menuBar;
-    MapPanel mapPanel;
+    TmMenuBar tmMenuBar;
+    TmMapPanel tmMapPanel;
     MediServer server;
     ConnectWindow connectWindow;
     MediClient mediClient;
@@ -49,8 +50,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         System.out.println(" - - -  SETTING UP GAME  - - - ");
         mapDim = new Dimension(initWidth, initHeight);
         menuDim = new Dimension(mapDim.width, 80);
-        mapPanel = new MapPanel(mapDim);
-        menuBar = new MenuBar(menuDim);
+        tmMapPanel = new TmMapPanel(mapDim);
+        tmMenuBar = new TmMenuBar(menuDim);
         gameRunning = true;
         System.out.println(" - - -  ________________  - - -");
     }
@@ -58,11 +59,11 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     private void startGame() {
         if (gameRunning) {
             setLayout(new BorderLayout());
-            add(mapPanel, BorderLayout.CENTER);
-            add(menuBar, BorderLayout.SOUTH);
+            add(tmMapPanel, BorderLayout.CENTER);
+            add(tmMenuBar, BorderLayout.SOUTH);
             pack();
-            frameBarHeight = getHeight() - mapPanel.getHeight() - menuBar.getHeight();
-            menuBar.initMapMenu(mapPanel);
+            frameBarHeight = getHeight() - tmMapPanel.getHeight() - tmMenuBar.getHeight();
+            tmMenuBar.initMapMenu(tmMapPanel);
             componentResized(null);
         } else {
             System.out.println("- [ERROR] -: Unable to start game. Game not set up!");
@@ -77,8 +78,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     @Override
     public void componentResized(ComponentEvent arg0) {
         if (gameRunning) {
-            int newHeight = getHeight() - menuBar.getHeight() - frameBarHeight;
-            mapPanel.updateSize(getWidth(), newHeight);
+            int newHeight = getHeight() - tmMenuBar.getHeight() - frameBarHeight;
+            tmMapPanel.updateSize(getWidth(), newHeight);
         }
         System.out.println("Window Size Changed: W: " + getWidth() + ", H: " + getHeight());
     }
@@ -115,6 +116,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             System.out.println("CLIENT: Connecting to server: "+ip+":"+port);
             new MediClient(ip, port).start();
             connectWindow.dispose();
+            
         }
 
     }

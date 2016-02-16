@@ -1,10 +1,14 @@
 package multiplayer;
 
-import multiplayer.DataPacketHandler;
-
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.io.*;
 import java.net.*;
-import mapBuilder.Player;
+import mapBuilder.MapHandler;
+import mapBuilder.MapPanel;
+import mapBuilder.MenuBar;
+import static menu.Main.initHeight;
+import static menu.Main.initWidth;
 
 /**
  * Created by Tobias on 2015-07-30.
@@ -17,14 +21,31 @@ public class MediClient extends Thread {
 
     String hostName;
     int portNumber;
-    Player player;
+    MapPanel mapPanel;
+    MapHandler mapHandler;
+    MenuBar menuBar;
+    MultiplayerPlayer player;
+    
+    Dimension mapDim;
+    Dimension menuDim;
+    boolean gameRunning = false;
+    
 
     public MediClient(String ip, int port) {
         hostName = ip;
         portNumber = port;
-        player = new Player("Player Name");
+        player = new MultiplayerPlayer("Player Name");
     }
 
+        private void setUpGame() {
+        System.out.println(" - - -  SETTING UP GAME  - - - ");
+        mapDim = new Dimension(initWidth, initHeight);
+        menuDim = new Dimension(mapDim.width, 80);
+        mapPanel = new MapPanel(mapDim);
+        menuBar = new MenuBar(menuDim);
+        System.out.println(" - - -  ________________  - - -");
+    }
+    
     @Override
     public void run() {
 
@@ -53,9 +74,6 @@ public class MediClient extends Thread {
                         switch (packet[0]) {
                             case DataPacketHandler.PACKETTYPE_STATUSUPDATE:
                                 //TODO Handle client status update
-                                break;
-                            case DataPacketHandler.PACKETTYPE_TILEREQUEST:
-                                //TODO Handle client requesting tile
                                 break;
                             case DataPacketHandler.PACKETTYPE_TILEDELIVERY:
                                 //TODO Handle tile delivery to client
