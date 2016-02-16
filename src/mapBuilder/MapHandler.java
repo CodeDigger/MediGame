@@ -309,7 +309,6 @@ public class MapHandler {
         }
 
         
-        
         for (Tile t : drawList) {
             t.paint(g);
         }
@@ -365,46 +364,15 @@ public class MapHandler {
         return map.getHeight();
     }
 
-    /*public Tile getToBePlaced() {
-        return toBePlaced;
-    }*/
-
     public Image getImage(int type) {
         return tH.getImage(type);
     }
-    
-    /*public TileStack getMoustStack(MouseEvent mME) {
-        tileStack1.checkHighlight();
-        
-        
-        return null;
-    }*/
 
     public Tile getMouseTile(int mY, int mX) {
         mY -= screenY;
         mX -= screenX;
         int mouseRow = mY / TileHandler.getHeight();
         int mouseCol = mX / TileHandler.getWidth();
-        /*double leftX = mouseCol * TileHandler.getWidth();
-         double centerY = mouseRow * TileHandler.getHeight() / 2 + TileHandler.getHeight() / 2;
-         double localMX = mX - leftX;
-         double TileHandlerK = TileHandler.getTileK(); 
-		
-         if (mY < centerY - TileHandlerK * localMX) {
-         // North West
-         mouseRow--;
-         mouseCol--;
-         } else if (mY < centerY - TileHandler.getHeight() + TileHandlerK * localMX) {
-         // North East
-         mouseRow--;
-         } else if (mY > centerY + TileHandler.getHeight() - TileHandlerK * localMX) {
-         // South East
-         mouseRow++;
-         } else if (mY > centerY + TileHandlerK * localMX) {
-         // South West
-         mouseRow++;
-         mouseCol--;
-         }*/
 
         Tile tile = null;
         if (mouseRow < map.getYCount() && mouseCol < map.getXCount()) {
