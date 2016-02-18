@@ -29,7 +29,6 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     
     //MULTIPLAYER
     MediServer server;
-    MediClient mediClient;
     ClientMapPanel multiMapPanel;
 
     Dimension mapDim;

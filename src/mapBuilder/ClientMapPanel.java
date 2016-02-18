@@ -34,7 +34,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     AudioHandler audioHandler;
     
     UserInterface uI;
-    boolean waitingForStart;
+    boolean waitingForStart = true;
     private boolean tileRequestMode = true;
     private boolean playing = false;
 
@@ -79,6 +79,10 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         while(waitingForStart) {
             //Do nothing
         }
+    }
+    
+    public void start() {
+        waitingForStart = false;
     }
     
     @Override
@@ -168,6 +172,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
                     int currentCol = tile.getCol();
 
                     mapHandler.playerPlaceLand(player.checkTile(), currentRow, currentCol);
+                    uI.setTileImages(null, 0);
                     playing = false;
                     tileRequestMode = true;
                 } else {

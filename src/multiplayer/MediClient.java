@@ -4,6 +4,8 @@ import mapBuilder.ClientPlayer;
 import java.awt.Dimension;
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mapBuilder.ClientMapHandler;
 import mapBuilder.ClientMapPanel;
 import tiles.Tile;
@@ -39,7 +41,9 @@ public class MediClient extends Thread {
         
         
         player = new ClientPlayer("Player Name", new Dimension(800,600));
+        mapPanel.setPlayer(player);
         mapPanel.setUI(player.getUI());
+        mapPanel.start();
     }
     
     @Override
@@ -88,6 +92,7 @@ public class MediClient extends Thread {
                         System.out.println("CLIENT - Current state is PLAY");
                         
                         waitForDraw();
+                        System.out.println("CLIENT - Draw hej");
                         // Request tile from server:
                         out.println(DataPacketHandler.createTileRequestPackage());
                         // Get tile from server:
@@ -126,14 +131,24 @@ public class MediClient extends Thread {
     
     private void waitForDraw() {
         while(mapPanel.getTileRequest()) {
-            //Wait
+            try {
+                //Wait
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(MediClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
     private void waitForPlay() {
         mapPanel.permissionToPlay();
         while(mapPanel.isPlaying()) {
-            //Wait
+            try {
+                //Wait
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(MediClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
