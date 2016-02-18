@@ -11,6 +11,7 @@ public class Tile {
     protected int col;
     protected int width;
     protected int height;
+    protected int type;
     protected int alignment = 0;
     protected int maxAlignments = 4;
     private char[] content;
@@ -47,36 +48,8 @@ public class Tile {
         y = row * TileHandler.getHeight();
         width = TileHandler.getWidth();
         height = TileHandler.getHeight();
-        /*if (row % 2 == 0) {
-         y -= TileHandler.getH   eight() * row / 2;
-         } else if (row % 2 == 1) {
-         y -= TileHandler.getHeight() / 2;
-         y -= TileHandler.getHeight() * ((row - 1) / 2);
-         x += TileHandler.getWidth() / 2;
-         } else {
-         System.out.println("ERROR: Correcting TILE cordinates failed");
-         }*/
-
-        /*polyY[0] = y;
-         polyY[1] = y+TileHandler.getHeight()/2;
-         polyY[2] = y+TileHandler.getHeight();
-         polyY[3] = y+TileHandler.getHeight()/2;
-		
-         polyX[0] = x+TileHandler.getWidth()/2;
-         polyX[1] = x;
-         polyX[2] = x+TileHandler.getWidth()/2;
-         polyX[3] = x+TileHandler.getWidth();*/
     }
 
-    /*
-     public int getType() {
-     return type;
-     }
-    
-     public void changeType(Image img, int type) {
-     this.type = type;
-     setImage(img);
-     }*/
     public void place(int row, int col) {
         this.row = row;
         this.col = col;
@@ -107,6 +80,10 @@ public class Tile {
     
     public int getMaxAlignments() {
         return maxAlignments;
+    }
+    
+    public int getType() {
+        return type;
     }
 
     public Image getImage() {
@@ -177,8 +154,6 @@ public class Tile {
             g.drawImage(borderRight, x + width - 3, y - 4, null);
             g.drawImage(borderBot, x - 3, y + height - 4, null);
             g.drawImage(img, x - 3, y - 4, null);
- //            g.setColor(new Color(1.0f,1.0f,1.0f,0.5f) );
- //            g.drawRect(x-2, y-4, width, height);
         } else {
             g.drawImage(borderRight, x + width, y, null);
             g.drawImage(borderBot, x, y + height, null);

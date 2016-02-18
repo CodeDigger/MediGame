@@ -9,7 +9,7 @@ import utilities.ImageHandler;
 public class TileHandler {
 
     private static BufferedImage tileTextures;
-    private ArrayList<Image> imageList = new ArrayList<Image>();
+    private static ArrayList<Image> imageList = new ArrayList<Image>();
 
     private static int tileHeight = 60;
     private static int tileWidth = 60;
@@ -34,6 +34,41 @@ public class TileHandler {
     public TileHandler(int tileSprites) {
         tileTextures = ImageHandler.loadImage("/resources/textures/Tiles-03.png");;
         initImages(tileSprites);
+    }
+    
+    public static Tile initLand(int newTileType) {
+        Tile toBePlaced;
+        
+        if (newTileType == TileHandler.G4) {
+            toBePlaced = new Grass();
+        } else if (newTileType == TileHandler.R2A) {
+            toBePlaced = new R2A();
+        } else if (newTileType == TileHandler.C1) {
+            toBePlaced = new C1();
+        } else if (newTileType == TileHandler.C1R2B) {
+            toBePlaced = new C1R2B();
+        } else if (newTileType == TileHandler.C2A) {
+            toBePlaced = new C2A();
+        } else if (newTileType == TileHandler.C1R2A) {
+            toBePlaced = new C1R2A();
+        } else if (newTileType == TileHandler.C2B) {
+            toBePlaced = new C2B();
+        } else if (newTileType == TileHandler.C2C) {
+            toBePlaced = new C2C();
+        } else if (newTileType == TileHandler.C3A) {
+            toBePlaced = new C3A();
+        } else {
+            toBePlaced = null;
+            System.out.println("- [ERROR] -: Tile initiation failed!");
+        }
+        int all = toBePlaced.getMaxAlignments();
+        Image[] images = new Image[all];
+        for (int i = 0; i < all; i++) {
+            images[i] = getImage(newTileType+i);
+        }
+        toBePlaced.setAllImages(images);
+        toBePlaced.setImage(images[0]);
+        return toBePlaced;
     }
 
     private void initImages(int tileSprites) {
@@ -60,13 +95,7 @@ public class TileHandler {
         }
     }
 
-    //public static final int tEMPTY = 0;
-    //public static final int tGRASS = 10;
-    //public static final int tCITY_W = 20;
-    //public static final int tCITY_N = 21;
-    //public static final int tCITY_E = 22;
-    //public static final int tCITY_S = 23;
-    public Image getImage(int i) {
+    public static Image getImage(int i) {
         return imageList.get(i);
     }
 

@@ -18,33 +18,47 @@ import java.util.logging.Logger;
 import tiles.Tile;
 import utilities.AudioHandler;
 
-public class MapPanel extends Panel implements MouseListener, MouseMotionListener, KeyListener, MenubarListener {
+public class ClientMapPanel extends Panel implements MouseListener, MouseMotionListener, KeyListener, MenubarListener {
 
     private Dimension panelDim;
 
-    private MapHandler mapController;
+    private ClientMapHandler mapHandler;
 
     int mapX = 0;
     int mapY = 0;
+    
+    
+    
+    ClientPlayer player;
 
     AudioHandler audioHandler;
     
-    Player player1;
+    UserInterface uI;
+    boolean waitingForStart;
+    private boolean tileRequestMode = true;
+    private boolean playing = false;
 
-    public MapPanel(Dimension dim) {
-        panelDim = new Dimension(dim);
+    public ClientMapPanel(Dimension dim) {
+        panelDim = dim;
         setPreferredSize(panelDim);
         setBackground(Color.BLACK);
-        panelDim = dim;
-        mapController = new MapHandler();
-        player1 = new Player(dim);
+        mapHandler = new ClientMapHandler();
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
         
         audioHandler = new AudioHandler();
-        audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");
+        audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");   
     }
+    
+    public void setPlayer(ClientPlayer p) {
+        player = p;
+    }
+    
+    public void setUI(UserInterface uI) {
+        this.uI = uI;
+    }
+    
 
     VolatileImage mapImage = null;
     VolatileImage updateImage = null;
@@ -54,12 +68,17 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     
     public void paintMap(Graphics g) {
         if (mapImage == null) {
-            mapImage = createVolatileImage(mapController.getMapWidth(), mapController.getMapHeight());
+            mapImage = createVolatileImage(mapHandler.getMapWidth(), mapHandler.getMapHeight());
             requestFocus();
         }
-        mapController.paint(mapImage.getGraphics());
+        mapHandler.paint(mapImage.getGraphics());
         g.drawImage(mapImage, mapX, mapY, this);
-        
+    }
+    
+    public void waitForStart() {
+        while(waitingForStart) {
+            //Do nothing
+        }
     }
     
     @Override
@@ -68,8 +87,8 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         
         paintMap(g);
         
-        if (player1 != null) {
-           player1.paintUI(g, this);
+        if (uI != null) {
+           uI.paint(g, this);
         }
         
         g.setColor(Color.WHITE);
@@ -99,7 +118,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
             try {
                 Thread.sleep(1000 / 60 - dt);
             } catch (InterruptedException ex) {
-                Logger.getLogger(MapPanel.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ClientMapPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
             fps = 60;
         }
@@ -108,7 +127,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
 
     public void updateSize(int width, int height) {
         panelDim.setSize(width, height);
-        player1.resizeUI(width, height);
+        uI.setSize(width, height);
         updateImage = null;
     }
 
@@ -117,16 +136,16 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         mapY += dY;
         if (mapX > 0) {
             mapX = 0;
-        } else if (mapX < (-mapController.getMapWidth() + maxWidth)) {
-            mapX = -mapController.getMapWidth() + maxWidth;
+        } else if (mapX < (-mapHandler.getMapWidth() + maxWidth)) {
+            mapX = -mapHandler.getMapWidth() + maxWidth;
         }
         if (mapY > 0) {
             mapY = 0;
-        } else if (mapY < (-mapController.getMapHeight() + maxHeight)) {
-            mapY = -mapController.getMapHeight() + maxHeight;
+        } else if (mapY < (-mapHandler.getMapHeight() + maxHeight)) {
+            mapY = -mapHandler.getMapHeight() + maxHeight;
         }
-        mapController.setMapX(mapX);
-        mapController.setMapY(mapY);
+        mapHandler.setMapX(mapX);
+        mapHandler.setMapY(mapY);
     }
 
     @Override
@@ -134,26 +153,30 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
         if (mE.getButton() == MouseEvent.BUTTON1) {
             pointX = mE.getX() - mapX;
             pointY = mE.getY() - mapY;
-            TileStack tS = mapController.highlightStacks(pointX, pointY);
+            TileStack tS = mapHandler.highlightStacks(pointX, pointY);
             if (tS != null) {
-                Tile t = mapController.drawLand(tS);
-                player1.giveTile(t);
+                  tileRequestMode = false;
+                  System.out.println("CLIENT: Flagged for tile request");
+//                Tile t = mapHandler.drawLand(tS);
+//                player1.giveTile(t);
                 repaint();
             } else {
-                Tile tile = mapController.getMouseTile(mE.getY(), mE.getX());
-
-                if (tile != null && player1.checkTile() != null) {
+                Tile tile = mapHandler.getMouseTile(mE.getY(), mE.getX());
+                
+                if (tile != null && playing && player.checkTile() != null) {
                     int currentRow = tile.getRow();
                     int currentCol = tile.getCol();
 
-                    mapController.playerPlaceLand(player1, currentRow, currentCol);
+                    mapHandler.playerPlaceLand(player.checkTile(), currentRow, currentCol);
+                    playing = false;
+                    tileRequestMode = true;
                 } else {
                     //Do Nothing
                 }
             }
 
         }
-        mapController.updateHighlight(mE);
+        mapHandler.updateHighlight(mE);
         repaint();
     }
 
@@ -162,11 +185,11 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
     
     @Override
     public void mouseMoved(MouseEvent mME) {
-        mapController.updateHighlight(mME);
+        mapHandler.updateHighlight(mME);
         //map.getHi(mME);
         pointX = mME.getX()-mapX;
         pointY = mME.getY()-mapY;
-        mapController.highlightStacks(pointX,pointY);
+        mapHandler.highlightStacks(pointX,pointY);
         
         repaint();
     }
@@ -205,7 +228,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
             lastMouseX = mME.getX();
             lastMouseY = mME.getY();
         }
-        mapController.updateHighlight(mME);
+        mapHandler.updateHighlight(mME);
         repaint();
     }
 
@@ -221,7 +244,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
             case KeyEvent.VK_ESCAPE:
                 break;
             case KeyEvent.VK_SPACE:
-                player1.rotateTile();
+                player.rotateTile();
                 break;
             case KeyEvent.VK_E:
                 break;
@@ -242,7 +265,7 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
                 repaint();
                 break;
             case MenubarListener.ITEM_ROTATE:
-                player1.rotateTile();
+                player.rotateTile();
                 repaint();
                 /*placeAlignment++;
                  if (placeAlignment >= toBePlaced.getAlignments()) {
@@ -252,6 +275,22 @@ public class MapPanel extends Panel implements MouseListener, MouseMotionListene
                 break;
         }
         repaint();
+    }
+    
+    public void permissionToPlay() {
+        playing = true;
+    }
+    
+    public boolean isPlaying() {
+        return playing;
+    }
+    
+    public boolean getTileRequest() {
+        return tileRequestMode;
+    }
+    
+    public ClientMapHandler getMapHandler() {
+        return mapHandler;
     }
 
 }

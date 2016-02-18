@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import tiles.*;
 import utilities.ImageHandler;
 
-public class MapHandler {
+public class ServerMapHandler {
     
-    Map map;
+    MultiplayerMap map;
     Image bgi;
     private final ArrayList<MapListener> mapListeners = new ArrayList<MapListener>();
     
@@ -28,8 +28,8 @@ public class MapHandler {
     private int screenX = 0;
     private int screenY = 0;
     
-    public MapHandler() {
-        bgi = ImageHandler.loadImage("/resources/textures/wood_big.jpg");
+    public ServerMapHandler() {
+//        bgi = ImageHandler.loadImage("/resources/textures/wood_big.jpg");
         tH = new TileHandler(100);
         
         generateMap();
@@ -41,7 +41,7 @@ public class MapHandler {
         int mapWidth = (int) (xCount * TileHandler.getWidth());
         int mapHeight = (int) (yCount * TileHandler.getHeight());
         
-        map = new Map(xCount,yCount,mapWidth,mapHeight);
+        map = new MultiplayerMap(xCount,yCount,mapWidth,mapHeight);
         
         System.out.println("Generating Map:");
         System.out.println("- yCount: " + yCount + ", xCount: " + xCount);
@@ -61,16 +61,13 @@ public class MapHandler {
         map.addTileStack(new TileStack(stackImg,14,324,520));
         map.addTileStack(new TileStack(stackImg,14,286,618));
 
-        Tile t = initLand(TileHandler.C1R2A);
+        Tile t = TileHandler.initLand(TileHandler.C1R2A);
         t.rotate();
         placeLand(t, centerRow, centerCol);
     }
-        
-    public void addTileListener(MapListener tL) {
-        mapListeners.add(tL);
-    }
 
-    public Tile drawLand(TileStack tS) {
+    public Tile drawLand(int stackI) {
+        TileStack tS = map.getStack(stackI);
         int newTileType = 0;
         double d = Math.random();
         double div = (1.0 / TileHandler.DIFFERENT_TYPES);
@@ -95,55 +92,19 @@ public class MapHandler {
             newTileType = TileHandler.C3A;
         }
         System.out.println("Note: Draw: " + newTileType + " (" + div + "|" + d + ")");
-        Tile t = initLand(newTileType);
+        Tile t = TileHandler.initLand(newTileType);
         tS.drawStack();
         if (tS.getStackCount() == 0) {
             map.deleteStack(tS);
         }
         return t;
     }
-
-    Tile initLand(int newTileType) {
-        Tile toBePlaced;
-        
-        if (newTileType == TileHandler.G4) {
-            toBePlaced = new Grass();
-        } else if (newTileType == TileHandler.R2A) {
-            toBePlaced = new R2A();
-        } else if (newTileType == TileHandler.C1) {
-            toBePlaced = new C1();
-        } else if (newTileType == TileHandler.C1R2B) {
-            toBePlaced = new C1R2B();
-        } else if (newTileType == TileHandler.C2A) {
-            toBePlaced = new C2A();
-        } else if (newTileType == TileHandler.C1R2A) {
-            toBePlaced = new C1R2A();
-        } else if (newTileType == TileHandler.C2B) {
-            toBePlaced = new C2B();
-        } else if (newTileType == TileHandler.C2C) {
-            toBePlaced = new C2C();
-        } else if (newTileType == TileHandler.C3A) {
-            toBePlaced = new C3A();
-        } else {
-            toBePlaced = null;
-            System.out.println("- [ERROR] -: Tile initiation failed!");
-        }
-        int all = toBePlaced.getMaxAlignments();
-        Image[] images = new Image[all];
-        for (int i = 0; i < all; i++) {
-            images[i] = tH.getImage(newTileType+i);
-        }
-        toBePlaced.setAllImages(images);
-        return toBePlaced;
-    }
     
-    boolean playerPlaceLand(Player p, int row, int col) {
-        Tile t = p.takeTile();
+    boolean playerPlaceLand(Tile t, int row, int col) {
         if (placeLand(t, row, col)) {
             return true;
         } else {
-            p.giveTile(t);
-            System.out.println("NOTE: Tile returned to player");
+            System.out.println("NOTE: Tile not placed.");
             return false;
         }
     }
@@ -156,16 +117,16 @@ public class MapHandler {
             
             // Create adjacent tiles:
             if (col - 1 >= 0) {
-                checkAdjecentSpace(row, col - 1);
+                checkAdjacentSpace(row, col - 1);
             }
             if (row - 1 >= 0) {
-                checkAdjecentSpace(row - 1, col);
+                checkAdjacentSpace(row - 1, col);
             }
             if (row + 1 <= map.getXCount()) {
-                checkAdjecentSpace(row + 1, col);
+                checkAdjacentSpace(row + 1, col);
             }
             if (col + 1 <= map.getYCount()) {
-                checkAdjecentSpace(row, col + 1);
+                checkAdjacentSpace(row, col + 1);
             }
             
             for (MapListener tL : mapListeners) {
@@ -179,7 +140,7 @@ public class MapHandler {
         }
     }
 
-    private void checkAdjecentSpace(int row, int col) {
+    private void checkAdjacentSpace(int row, int col) {
         if (row >= 0 && col >= 0 && row < map.getYCount() && col < map.getXCount()) {
             if (map.getTile(row, col) == null) {
                 Tile t = new EmptySpace(row, col, tH.getImage(TileHandler._EMPTY));

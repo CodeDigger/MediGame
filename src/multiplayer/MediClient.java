@@ -1,49 +1,45 @@
 package multiplayer;
 
-import java.awt.BorderLayout;
+import mapBuilder.ClientPlayer;
 import java.awt.Dimension;
 import java.io.*;
 import java.net.*;
-import mapBuilder.MapHandler;
-import mapBuilder.MapPanel;
-import mapBuilder.MenuBar;
-import static menu.Main.initHeight;
-import static menu.Main.initWidth;
+import mapBuilder.ClientMapHandler;
+import mapBuilder.ClientMapPanel;
+import tiles.Tile;
+import tiles.TileHandler;
 
 /**
  * Created by Tobias on 2015-07-30.
  * Medi client class
  */
 public class MediClient extends Thread {
+    
     private static final int WAIT = 0;
     private static final int PLAY = 1;
     private static final int UPDATE_BOARD = 2;
 
     String hostName;
     int portNumber;
-    MapPanel mapPanel;
-    MapHandler mapHandler;
-    MenuBar menuBar;
-    MultiplayerPlayer player;
+    ClientMapPanel mapPanel;
+    ClientMapHandler mapHandler;
+    
+    ClientPlayer player;
     
     Dimension mapDim;
     Dimension menuDim;
     boolean gameRunning = false;
     
 
-    public MediClient(String ip, int port) {
+    public MediClient(String ip, int port, ClientMapPanel mapPanel) {
         hostName = ip;
         portNumber = port;
-        player = new MultiplayerPlayer("Player Name");
-    }
-
-        private void setUpGame() {
-        System.out.println(" - - -  SETTING UP GAME  - - - ");
-        mapDim = new Dimension(initWidth, initHeight);
-        menuDim = new Dimension(mapDim.width, 80);
-        mapPanel = new MapPanel(mapDim);
-        menuBar = new MenuBar(menuDim);
-        System.out.println(" - - -  ________________  - - -");
+        this.mapPanel = mapPanel;
+        this.mapHandler = mapPanel.getMapHandler();
+        
+        
+        player = new ClientPlayer("Player Name", new Dimension(800,600));
+        mapPanel.setUI(player.getUI());
     }
     
     @Override
@@ -71,18 +67,16 @@ public class MediClient extends Thread {
                         //TODO Handle the server message. For now the server sets the state
                         
                         int[] packet = DataPacketHandler.handlePacket(fromServerString);
-                        switch (packet[0]) {
+                        switch (packet[DataPacketHandler.SUBPACKET_PACKETTYPE]) {
                             case DataPacketHandler.PACKETTYPE_STATUSUPDATE:
-                                state = packet[1];
-                                break;
-                            case DataPacketHandler.PACKETTYPE_TILEREQUEST:
-                                //TODO Handle client requesting tile
-                                break;
-                            case DataPacketHandler.PACKETTYPE_TILEDELIVERY:
-                                //TODO Handle tile delivery to client
+                                state = packet[DataPacketHandler.SUBPACKET_STATUS];
                                 break;
                             case DataPacketHandler.PACKETTYPE_TILEPLACEMENT:
-                                //TODO Handle players tile placement
+                                int row = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_ROW];
+                                int col = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_COL];
+                                int type = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_TYPE];
+                                int alignment = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_ALIGNMENT];
+                                mapHandler.placeLandFromServer(row, col, type, alignment);
                                 break;
                             default:
                                 // Do nothing (?)
@@ -92,14 +86,23 @@ public class MediClient extends Thread {
                         break;
                     case PLAY:
                         System.out.println("CLIENT - Current state is PLAY");
-                        fromUserString = stdIn.readLine();
-                        if (fromUserString != null) {
-                            out.println(fromUserString);
-                        } else {
-                            fromUserString = "DUMDUM";
-                            out.println(fromUserString);
-                        }
+                        
+                        waitForDraw();
+                        // Request tile from server:
+                        out.println(DataPacketHandler.createTileRequestPackage());
+                        // Get tile from server:
+                        fromServerString = in.readLine();
+                        int[] tileTypeData = DataPacketHandler.handlePacket(fromServerString);
+                        Tile tileToPlay = TileHandler.initLand(tileTypeData[DataPacketHandler.SUBPACKET_TILETYPETOPLAY]);
+                        // Stuff:
+                        player.giveTile(tileToPlay);
+                        waitForPlay();
+                        // Send tile placement package to server! :D
+                        out.println(DataPacketHandler.createTilePlacementPackage(tileToPlay.getRow(),
+                                tileToPlay.getCol(), tileToPlay.getType(), tileToPlay.getAlignment()));
+                        
                         state = WAIT;
+                        
                         break;
                     case UPDATE_BOARD:
                         //TODO Update the board
@@ -120,4 +123,18 @@ public class MediClient extends Thread {
             System.exit(1);
         }
     }
+    
+    private void waitForDraw() {
+        while(mapPanel.getTileRequest()) {
+            //Wait
+        }
+    }
+    
+    private void waitForPlay() {
+        mapPanel.permissionToPlay();
+        while(mapPanel.isPlaying()) {
+            //Wait
+        }
+    }
+
 }

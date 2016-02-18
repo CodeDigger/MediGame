@@ -7,6 +7,7 @@ public class C3A extends Tile {
     
     public C3A() {
         super();
+        type = TileHandler.C3A;
         initContent();
     }
     

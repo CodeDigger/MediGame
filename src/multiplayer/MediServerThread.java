@@ -1,22 +1,18 @@
 package multiplayer;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-
-
 /**
  * Created by Tobias on 2016-02-01.
  * Server thread class
  */
 public class MediServerThread extends Thread {
-    private static final int RECEIVE_CLIENT = 1;
-    private static final int RECEIVE_SERVER = 2;
+    private static final int CLIENT_PLAYING = 1;
+    private static final int CLIENT_UPDATE = 2;
     private Socket socket = null;
     private MediProtocol mediProtocol;
     private int clientIndex;
@@ -47,15 +43,15 @@ public class MediServerThread extends Thread {
                 int state;
                 
                 if (activeClient == clientIndex){
-                    state = RECEIVE_CLIENT;
+                    state = CLIENT_PLAYING;
                     out.println(DataPacketHandler.createStatusUpdatePackage(DataPacketHandler.STATUS_PLAY));
                 }
                 else {
-                    state = RECEIVE_SERVER;
+                    state = CLIENT_UPDATE;
                 }
 
                 switch (state) {
-                    case RECEIVE_SERVER:
+                    case CLIENT_UPDATE:
                         System.out.println("THREAD "+ clientIndex + ": RECEIVE_SERVER");
                         outputLine = mediProtocol.getMessage(); //Waits for the server to give a message to client
                         out.println(outputLine); //Send the message to the client
@@ -63,10 +59,13 @@ public class MediServerThread extends Thread {
                             this.sleep(100);
                         } catch (InterruptedException e) {}
                         break;
-                    case RECEIVE_CLIENT:
+                    case CLIENT_PLAYING:
                         System.out.println("THREAD "+ clientIndex + ": RECEIVE_CLIENT");
                         inputLine = in.readLine(); //Read request from client.
-                        mediProtocol.handleClientRequest(inputLine); //Give the protocol the request to handle it
+                        String tilePacket = mediProtocol.handleClientTileRequest(inputLine); //Give the protocol the request to handle it
+                        out.println(tilePacket);
+                        inputLine = in.readLine(); //Read tile placement from client.
+                        mediProtocol.handleClientTilePlacement(inputLine);
                         try {
                             this.sleep(100);
                         } catch (InterruptedException e) {}

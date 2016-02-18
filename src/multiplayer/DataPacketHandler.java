@@ -16,10 +16,20 @@ public class DataPacketHandler {
     public static final int STATUS_PLAY = 1;
     public static final int STATUS_UPDATEBOARD = 2;
 
-
+    public static final int SUBPACKET_PACKETTYPE = 0;
+    public static final int SUBPACKET_TILETYPETOPLAY = 1;
+    public static final int SUBPACKET_STATUS = 1;
+    public static final int SUBPACKET_TILETOPLACE_ROW = 1;
+    public static final int SUBPACKET_TILETOPLACE_COL = 2;
+    public static final int SUBPACKET_TILETOPLACE_TYPE = 3;
+    public static final int SUBPACKET_TILETOPLACE_ALIGNMENT = 4;
 
     public static String createTilePlacementPackage(int row, int col, int tileType, int tileAlignment){
         return (PACKETTYPE_TILEPLACEMENT + ":" + row + ":" + col + ":" + tileType + ":" + tileAlignment);
+    }
+    
+    public static String createTileDeliveryPackage(int tileType) {
+        return (PACKETTYPE_TILEDELIVERY + ":" + tileType);
     }
 
     public static String createStatusUpdatePackage(int status){
@@ -40,7 +50,7 @@ public class DataPacketHandler {
                 returnInt = new int[]{PACKETTYPE_TILEREQUEST};
                 break;
             case PACKETTYPE_TILEDELIVERY:
-                int tileDeliveryType = Integer.getInteger(packet.substring(2, packet.length()-1));
+                int tileDeliveryType = Integer.parseInt(packet.substring(2, packet.length()));
                 returnInt = new int[]{PACKETTYPE_TILEDELIVERY, tileDeliveryType};
                 break;
             case PACKETTYPE_TILEPLACEMENT:

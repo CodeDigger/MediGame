@@ -8,13 +8,12 @@ package mapBuilder;
 import tiles.TileStack;
 import java.util.ArrayList;
 import tiles.Tile;
-import tiles.TileHandler;
 
 /**
  *
  * @author David
  */
-public class Map {
+public class MultiplayerMap {
     
     private static int xCount;
     private static int yCount;
@@ -25,7 +24,7 @@ public class Map {
     private Tile[][] tileArray;
     ArrayList<TileStack> stackList;
     
-    public Map(int xC, int yC, int width, int height) {
+    public MultiplayerMap(int xC, int yC, int width, int height) {
         xCount = xC;
         yCount = yC;
         mapWidth = width;
@@ -56,6 +55,10 @@ public class Map {
     
     public Tile getTile(int row, int col) {
         return tileArray[row][col];
+    }
+    
+    public TileStack getStack(int i) {
+        return stackList.get(i);
     }
     
     public ArrayList<TileStack> getStackList() {

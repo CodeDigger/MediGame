@@ -1,44 +1,50 @@
 package multiplayer;
 
+import mapBuilder.ServerMapHandler;
+import tiles.Tile;
+
 /**
- * Created by Tobias on 2015-07-30.
- * Medi protocol class
+ * Created by Tobias on 2015-07-30. Medi protocol class
  */
 public class MediProtocol {
+
     int connectedClients = 0;
 
-    private boolean waitingForResponse = true;
+//    private boolean waitingForResponse = true;
     private int activeClient = 0;
+    ServerMapHandler mapHandler;
 
     private String message;
 
-    public synchronized void handleClientRequest(String message) {
-//        while(!waitingForResponse){
-//            try {
-//                wait();
-//            } catch (InterruptedException e) {}
-//        }
-//        try {
-//                wait();
-//            } catch (InterruptedException e) {}
-        waitingForResponse = false;
+    public MediProtocol() {
+        mapHandler = new ServerMapHandler();
+    }
+
+    public synchronized void handleClientTilePlacement(String message) {
+//        waitingForResponse = false;
         this.message = message;
-        System.out.println("Client: " + activeClient + " played " + message);
-        //TODO Handle the client request
+        System.out.println("Client: " + activeClient + " played: " + message);
+        
         nextActiveClient();
         notifyAll();
+
+    }
+
+    public synchronized String handleClientTileRequest(String message) {
+//        waitingForResponse = false;
+        System.out.println("Client: " + activeClient + " played: " + message);
+        int[] packet = DataPacketHandler.handlePacket(message);
+        Tile t = mapHandler.drawLand(0);
+        String packetToClient = DataPacketHandler.createTileDeliveryPackage(t.getType());
+        return packetToClient;
     }
 
     public synchronized String getMessage() {
-//        while(waitingForResponse){
-//            try {
-//                wait();
-//            } catch (InterruptedException e) {}
-//        }
         try {
-                wait();
-            } catch (InterruptedException e) {}
-        waitingForResponse = true;
+            wait();
+        } catch (InterruptedException e) {
+        }
+//        waitingForResponse = true;
         notifyAll();
         return message;
     }
@@ -52,7 +58,7 @@ public class MediProtocol {
 
     public void setConnectedClients(int i) {
         connectedClients = i;
-        System.out.println("MediProtcol: "+connectedClients+" connected");
+        System.out.println("MediProtcol: " + connectedClients + " connected");
     }
 
     public void newClientConnected() {

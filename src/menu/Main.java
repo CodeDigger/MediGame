@@ -9,6 +9,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
 import javax.swing.JFrame;
+import mapBuilder.ClientMapPanel;
 import multiplayer.MediServer;
 import testMode.TmMapPanel;
 import testMode.TmMenuBar;
@@ -18,13 +19,18 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     public static final int initWidth = 1200;
     public static final int initHeight = 600;
 
-    
+    //MENU
     MainMenu mainMenu;
+    ConnectWindow connectWindow;
+    
+    //TEST MODE
     TmMenuBar tmMenuBar;
     TmMapPanel tmMapPanel;
+    
+    //MULTIPLAYER
     MediServer server;
-    ConnectWindow connectWindow;
     MediClient mediClient;
+    ClientMapPanel multiMapPanel;
 
     Dimension mapDim;
     Dimension menuDim;
@@ -114,9 +120,16 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             String ip = connectWindow.getIP();
             int port = connectWindow.getPort();
             System.out.println("CLIENT: Connecting to server: "+ip+":"+port);
-            new MediClient(ip, port).start();
-            connectWindow.dispose();
             
+            multiMapPanel = new ClientMapPanel(getSize());
+            new MediClient(ip, port, multiMapPanel).start();
+            connectWindow.dispose();
+            remove(mainMenu);
+            mainMenu = null;
+            setLayout(new BorderLayout());
+            add(multiMapPanel);
+            pack();
+            multiMapPanel.waitForStart();
         }
 
     }

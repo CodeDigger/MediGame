@@ -8,6 +8,7 @@ public class Grass extends Tile {
     public Grass() {
         super();
         maxAlignments = 1;
+        type = TileHandler.G4;
         initContent();
     }
     

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package testMode;
+package mapBuilder;
 
 import tiles.TileStack;
 import events.MapListener;
@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import tiles.*;
 import utilities.ImageHandler;
 
-public class TmMapHandler {
+public class ClientMapHandler {
     
-    TmMap map;
+    MultiplayerMap map;
     Image bgi;
     private final ArrayList<MapListener> mapListeners = new ArrayList<MapListener>();
     
@@ -28,7 +28,7 @@ public class TmMapHandler {
     private int screenX = 0;
     private int screenY = 0;
     
-    public TmMapHandler() {
+    public ClientMapHandler() {
         bgi = ImageHandler.loadImage("/resources/textures/wood_big.jpg");
         tH = new TileHandler(100);
         
@@ -41,7 +41,7 @@ public class TmMapHandler {
         int mapWidth = (int) (xCount * TileHandler.getWidth());
         int mapHeight = (int) (yCount * TileHandler.getHeight());
         
-        map = new TmMap(xCount,yCount,mapWidth,mapHeight);
+        map = new MultiplayerMap(xCount,yCount,mapWidth,mapHeight);
         
         System.out.println("Generating Map:");
         System.out.println("- yCount: " + yCount + ", xCount: " + xCount);
@@ -61,89 +61,57 @@ public class TmMapHandler {
         map.addTileStack(new TileStack(stackImg,14,324,520));
         map.addTileStack(new TileStack(stackImg,14,286,618));
 
-        Tile t = initLand(TileHandler.C1R2A);
+        Tile t = TileHandler.initLand(TileHandler.C1R2A);
         t.rotate();
         placeLand(t, centerRow, centerCol);
     }
         
-    public void addTileListener(MapListener tL) {
-        mapListeners.add(tL);
+    public void placeLandFromServer(int row, int col, int tileType, int alignment) {
+        Tile t = TileHandler.initLand(tileType);
+        for (int i = 0; i < alignment; i++) {
+            t.rotate();
+        }
+        placeLand(t, row, col);
     }
 
-    public Tile drawLand(TileStack tS) {
-        int newTileType = 0;
-        double d = Math.random();
-        double div = (1.0 / TileHandler.DIFFERENT_TYPES);
-        int i = 1;
-        if (d <= div * i) {
-            newTileType = TileHandler.G4;
-        } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.R2A;
-        } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C1;
-        } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C1R2B;
-        } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C2A;
-        } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C1R2A;
-        } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C2B;
-        } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C2C;
-        } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C3A;
-        }
-        System.out.println("Note: Draw: " + newTileType + " (" + div + "|" + d + ")");
-        Tile t = initLand(newTileType);
-        tS.drawStack();
-        if (tS.getStackCount() == 0) {
-            map.deleteStack(tS);
-        }
-        return t;
-    }
-
-    Tile initLand(int newTileType) {
-        Tile toBePlaced;
-        
-        if (newTileType == TileHandler.G4) {
-            toBePlaced = new Grass();
-        } else if (newTileType == TileHandler.R2A) {
-            toBePlaced = new R2A();
-        } else if (newTileType == TileHandler.C1) {
-            toBePlaced = new C1();
-        } else if (newTileType == TileHandler.C1R2B) {
-            toBePlaced = new C1R2B();
-        } else if (newTileType == TileHandler.C2A) {
-            toBePlaced = new C2A();
-        } else if (newTileType == TileHandler.C1R2A) {
-            toBePlaced = new C1R2A();
-        } else if (newTileType == TileHandler.C2B) {
-            toBePlaced = new C2B();
-        } else if (newTileType == TileHandler.C2C) {
-            toBePlaced = new C2C();
-        } else if (newTileType == TileHandler.C3A) {
-            toBePlaced = new C3A();
-        } else {
-            toBePlaced = null;
-            System.out.println("- [ERROR] -: Tile initiation failed!");
-        }
-        int all = toBePlaced.getMaxAlignments();
-        Image[] images = new Image[all];
-        for (int i = 0; i < all; i++) {
-            images[i] = tH.getImage(newTileType+i);
-        }
-        toBePlaced.setAllImages(images);
-        return toBePlaced;
-    }
+//    public Tile drawLand(TileStack tS) {
+//        int newTileType = 0;
+//        double d = Math.random();
+//        double div = (1.0 / TileHandler.DIFFERENT_TYPES);
+//        int i = 1;
+//        if (d <= div * i) {
+//            newTileType = TileHandler.G4;
+//        } else if (d > (div * i++) && d <= (div * i)) {
+//            newTileType = TileHandler.R2A;
+//        } else if (d > (div * i++) && d <= (div * i)) {
+//            newTileType = TileHandler.C1;
+//        } else if (d > (div * i++) && d <= (div * i)) {
+//            newTileType = TileHandler.C1R2B;
+//        } else if (d > (div * i++) && d <= (div * i)) {
+//            newTileType = TileHandler.C2A;
+//        } else if (d > (div * i++) && d <= (div * i)) {
+//            newTileType = TileHandler.C1R2A;
+//        } else if (d > (div * i++) && d <= (div * i)) {
+//            newTileType = TileHandler.C2B;
+//        } else if (d > (div * i++) && d <= (div * i)) {
+//            newTileType = TileHandler.C2C;
+//        } else if (d > (div * i++) && d <= (div * i)) {
+//            newTileType = TileHandler.C3A;
+//        }
+//        System.out.println("Note: Draw: " + newTileType + " (" + div + "|" + d + ")");
+//        Tile t = initLand(newTileType);
+//        tS.drawStack();
+//        if (tS.getStackCount() == 0) {
+//            map.deleteStack(tS);
+//        }
+//        return t;
+//    }
     
-    boolean playerPlaceLand(TmPlayer p, int row, int col) {
-        Tile t = p.takeTile();
+    boolean playerPlaceLand(Tile t, int row, int col) {
         if (placeLand(t, row, col)) {
             return true;
         } else {
-            p.giveTile(t);
-            System.out.println("NOTE: Tile returned to player");
+            System.out.println("NOTE: Tile not placed.");
             return false;
         }
     }
@@ -254,9 +222,10 @@ public class TmMapHandler {
                 }
             }
         }
+
         //TO THE LEFT
         if (col - 1 >= 0) {
-            t = map.getTile(row, col-1);
+            t = map.getTile(row, col);
         }
         if (t == null) {
             //Do nothing
@@ -307,7 +276,6 @@ public class TmMapHandler {
             tS.paint(g);
         }
 
-        
         
         for (Tile t : drawList) {
             t.paint(g);
@@ -364,46 +332,15 @@ public class TmMapHandler {
         return map.getHeight();
     }
 
-    /*public Tile getToBePlaced() {
-        return toBePlaced;
-    }*/
-
     public Image getImage(int type) {
         return tH.getImage(type);
     }
-    
-    /*public TileStack getMoustStack(MouseEvent mME) {
-        tileStack1.checkHighlight();
-        
-        
-        return null;
-    }*/
 
     public Tile getMouseTile(int mY, int mX) {
         mY -= screenY;
         mX -= screenX;
         int mouseRow = mY / TileHandler.getHeight();
         int mouseCol = mX / TileHandler.getWidth();
-        /*double leftX = mouseCol * TileHandler.getWidth();
-         double centerY = mouseRow * TileHandler.getHeight() / 2 + TileHandler.getHeight() / 2;
-         double localMX = mX - leftX;
-         double TileHandlerK = TileHandler.getTileK(); 
-		
-         if (mY < centerY - TileHandlerK * localMX) {
-         // North West
-         mouseRow--;
-         mouseCol--;
-         } else if (mY < centerY - TileHandler.getHeight() + TileHandlerK * localMX) {
-         // North East
-         mouseRow--;
-         } else if (mY > centerY + TileHandler.getHeight() - TileHandlerK * localMX) {
-         // South East
-         mouseRow++;
-         } else if (mY > centerY + TileHandlerK * localMX) {
-         // South West
-         mouseRow++;
-         mouseCol--;
-         }*/
 
         Tile tile = null;
         if (mouseRow < map.getYCount() && mouseCol < map.getXCount()) {

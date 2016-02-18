@@ -35,7 +35,7 @@ public class MenuBar extends Panel implements ActionListener {
                 Button1.addActionListener(this);
 	}
         
-        public void initMapMenu(MapPanel mapPanel) {
+        public void initMapMenu(ClientMapPanel mapPanel) {
             menubarListeners.add(mapPanel);
         }
 	

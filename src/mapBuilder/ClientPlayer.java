@@ -1,5 +1,5 @@
 
-package multiplayer;
+package mapBuilder;
 
 import mapBuilder.*;
 import java.awt.Dimension;
@@ -8,19 +8,20 @@ import java.awt.image.ImageObserver;
 import tiles.Tile;
 
 
-public class MultiplayerPlayer {
+public class ClientPlayer {
     
     private Tile toBePlaced = null;
     private int placeAlignment = 0;
     String playerName = "NoName";
     UserInterface uI;
     
-    public MultiplayerPlayer(Dimension dim) {
+    public ClientPlayer(String name, Dimension dim) {
+        playerName = name;
         uI = new UserInterface(dim);
         
     }
     
-    public MultiplayerPlayer(String name) {
+    public ClientPlayer(String name) {
         playerName = name;
     }
     
@@ -31,6 +32,10 @@ public class MultiplayerPlayer {
     
     public Tile checkTile() {
         return toBePlaced;
+    }
+    
+    public UserInterface getUI() {
+        return uI;
     }
     
     public void rotateTile() {

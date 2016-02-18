@@ -7,6 +7,7 @@ public class C2B extends Tile {
     
     public C2B() {
         super();
+        type = TileHandler.C2B;
         initContent();
     }
     

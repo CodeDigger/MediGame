@@ -8,6 +8,7 @@ public class C1 extends Tile {
     
     public C1() {
         super();
+        type = TileHandler.C1;
         initContent();
     }
     

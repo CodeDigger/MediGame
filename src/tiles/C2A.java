@@ -8,6 +8,7 @@ public class C2A extends Tile {
     public C2A() {
         super();
         maxAlignments = 2;
+        type = TileHandler.C2A;
         initContent();
     }
     
