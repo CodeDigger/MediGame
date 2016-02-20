@@ -26,8 +26,9 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
 
     int mapX = 0;
     int mapY = 0;
-    
-    
+
+    private int lastMouseX;
+    private int lastMouseY;
     
     ClientPlayer player;
 
@@ -161,8 +162,6 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
             if (tS != null) {
                   tileRequestMode = false;
                   System.out.println("CLIENT: Flagged for tile request");
-//                Tile t = mapHandler.drawLand(tS);
-//                player1.giveTile(t);
                 repaint();
             } else {
                 Tile tile = mapHandler.getMouseTile(mE.getY(), mE.getX());
@@ -171,12 +170,11 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
                     int currentRow = tile.getRow();
                     int currentCol = tile.getCol();
 
-                    mapHandler.playerPlaceLand(player.checkTile(), currentRow, currentCol);
-                    uI.setTileImages(null, 0);
-                    playing = false;
-                    tileRequestMode = true;
-                } else {
-                    //Do Nothing
+                    if(mapHandler.playerPlaceLand(player.checkTile(), currentRow, currentCol)) {
+                        uI.setTileImages(null, 0);
+                        playing = false;
+                        tileRequestMode = true;
+                    }
                 }
             }
 
@@ -219,14 +217,11 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         }
     }
 
-    private int lastMouseX;
-    private int lastMouseY;
-
     @Override
     public void mouseDragged(MouseEvent mME) {
-        if (mME.getButton() == MouseEvent.BUTTON1) {
-            int dX = (int) (mME.getX() - lastMouseX);
-            int dY = (int) (mME.getY() - lastMouseY);
+        if (mME.getButton() == MouseEvent.BUTTON1 || mME.getButton() == MouseEvent.NOBUTTON) {
+            int dX = mME.getX() - lastMouseX;
+            int dY = mME.getY() - lastMouseY;
 
             moveMapLocation(dX, dY, panelDim.width, panelDim.height);
             
@@ -251,7 +246,8 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
             case KeyEvent.VK_SPACE:
                 player.rotateTile();
                 break;
-            case KeyEvent.VK_E:
+            case KeyEvent.VK_Q:
+                player.leaveGame();
                 break;
         }
     }

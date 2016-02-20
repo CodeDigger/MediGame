@@ -16,6 +16,7 @@ public class MediServerThread extends Thread {
     private Socket socket = null;
     private MediProtocol mediProtocol;
     private int clientIndex;
+    private boolean clientConnected = false;
 
     public MediServerThread(Socket socket, MediProtocol mediProtocol, int clientIndex) {
         super("MediServerThread "+clientIndex);
@@ -23,6 +24,7 @@ public class MediServerThread extends Thread {
         this.socket = socket;
         this.mediProtocol = mediProtocol;
         this.clientIndex = clientIndex;
+        clientConnected = true;
         System.out.println("Remote socket: " + this.socket.getRemoteSocketAddress().toString());
     }
 
@@ -56,27 +58,43 @@ public class MediServerThread extends Thread {
                         outputLine = mediProtocol.getMessage(); //Waits for the server to give a message to client
                         out.println(outputLine); //Send the message to the client
                         try {
-                            this.sleep(100);
+                            Thread.sleep(100);
                         } catch (InterruptedException e) {}
                         break;
                     case CLIENT_PLAYING:
                         System.out.println("THREAD "+ clientIndex + ": RECEIVE_CLIENT");
-                        inputLine = in.readLine(); //Read request from client.
+                        inputLine = in.readLine(); //Read tile request from client.
                         String tilePacket = mediProtocol.handleClientTileRequest(inputLine); //Give the protocol the request to handle it
+                        if (tilePacket.equals("QUIT")){
+                            clientDisconnected();
+                            break;
+                        }
                         out.println(tilePacket);
                         inputLine = in.readLine(); //Read tile placement from client.
-                        mediProtocol.handleClientTilePlacement(inputLine);
+                        String clientStatus = mediProtocol.handleClientTilePlacement(inputLine);
+                        if (clientStatus.equals("QUIT")){
+                            clientDisconnected();
+                            break;
+                        }
                         try {
-                            this.sleep(100);
+                            Thread.sleep(100);
                         } catch (InterruptedException e) {}
                         break;
                     default:
                         break;
                 }
+                if (!clientConnected){
+                    System.out.println("THREAD "+ clientIndex + ": CLIENT DISCONNECTED");
+                    break;
+                }
             }
-            //socket.close();
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void clientDisconnected() {
+        clientConnected = false;
     }
 }

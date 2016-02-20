@@ -11,10 +11,10 @@ public class DataPacketHandler {
     public static final int PACKETTYPE_TILEREQUEST = 1;
     public static final int PACKETTYPE_TILEDELIVERY = 2;
     public static final int PACKETTYPE_TILEPLACEMENT = 3;
+    public static final int PACKETTYPE_LEAVEGAME = 4;
 
     public static final int STATUS_WAIT = 0;
     public static final int STATUS_PLAY = 1;
-    public static final int STATUS_UPDATEBOARD = 2;
 
     public static final int SUBPACKET_PACKETTYPE = 0;
     public static final int SUBPACKET_TILETYPETOPLAY = 1;
@@ -39,6 +39,10 @@ public class DataPacketHandler {
     public static String createTileRequestPackage(){
         return String.valueOf(PACKETTYPE_TILEREQUEST);
     }
+    public static String createLeaveGamePackage(){
+        return String.valueOf(PACKETTYPE_LEAVEGAME);
+    }
+
 
     public static int[] handlePacket(String packet){
         int[] returnInt;
@@ -69,6 +73,9 @@ public class DataPacketHandler {
                 int tileAlignment = Integer.parseInt(packet.substring(divider[3] + 1, packet.length()));
                 returnInt = new int[]{PACKETTYPE_TILEPLACEMENT,row,col,tileType,tileAlignment};
 
+                break;
+            case PACKETTYPE_LEAVEGAME:
+                returnInt = new int[]{PACKETTYPE_LEAVEGAME};
                 break;
             default:
                 returnInt = new int[]{0,0};

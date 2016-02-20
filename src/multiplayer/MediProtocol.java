@@ -10,7 +10,6 @@ public class MediProtocol {
 
     int connectedClients = 0;
 
-//    private boolean waitingForResponse = true;
     private int activeClient = 0;
     ServerMapHandler mapHandler;
 
@@ -20,23 +19,32 @@ public class MediProtocol {
         mapHandler = new ServerMapHandler();
     }
 
-    public synchronized void handleClientTilePlacement(String message) {
-//        waitingForResponse = false;
+    public synchronized String handleClientTilePlacement(String message) {
+        String returnString;
+        if (DataPacketHandler.handlePacket(message)[DataPacketHandler.SUBPACKET_PACKETTYPE] == DataPacketHandler.PACKETTYPE_LEAVEGAME){
+            returnString = "QUIT";
+        }
+        else {
+            returnString = "PLAYING";
+        }
         this.message = message;
-        System.out.println("Client: " + activeClient + " played: " + message);
+        System.out.println("MEDIPROTOCOL: Client " + activeClient + " placed: " + message);
         
         nextActiveClient();
         notifyAll();
+        return returnString;
 
     }
 
     public synchronized String handleClientTileRequest(String message) {
-//        waitingForResponse = false;
-        System.out.println("Client: " + activeClient + " played: " + message);
-        int[] packet = DataPacketHandler.handlePacket(message);
-        Tile t = mapHandler.drawLand(0);
-        String packetToClient = DataPacketHandler.createTileDeliveryPackage(t.getType());
-        return packetToClient;
+        if (DataPacketHandler.handlePacket(message)[DataPacketHandler.SUBPACKET_PACKETTYPE] == DataPacketHandler.PACKETTYPE_LEAVEGAME){
+            return "QUIT";
+        }
+        else {
+            System.out.println("MEDIPROTOCOL: Client " + activeClient + " requested a tile");
+            Tile t = mapHandler.drawLand(0);
+            return DataPacketHandler.createTileDeliveryPackage(t.getType());
+        }
     }
 
     public synchronized String getMessage() {
@@ -44,7 +52,6 @@ public class MediProtocol {
             wait();
         } catch (InterruptedException e) {
         }
-//        waitingForResponse = true;
         notifyAll();
         return message;
     }
@@ -58,17 +65,17 @@ public class MediProtocol {
 
     public void setConnectedClients(int i) {
         connectedClients = i;
-        System.out.println("MediProtcol: " + connectedClients + " connected");
+        System.out.println("MEDIPROTOCOL: " + connectedClients + " connected");
     }
 
     public void newClientConnected() {
         connectedClients++;
-        System.out.println("MediProtcol: " + connectedClients + " connected");
+        System.out.println("MEDIPROTOCOL: " + connectedClients + " connected");
     }
 
     public void clientDisconected() {
         connectedClients--;
-        System.out.println("MediProtcol: " + connectedClients + " connected");
+        System.out.println("MEDIPROTOCOL: " + connectedClients + " connected");
     }
 
     public synchronized int getActiveClient() {

@@ -35,6 +35,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     Dimension menuDim;
     int frameBarHeight;
     boolean gameRunning = false;
+    private boolean multiplayerGameRunning = false;
 
     public Main() {
         super("Medi");
@@ -86,6 +87,10 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             int newHeight = getHeight() - tmMenuBar.getHeight() - frameBarHeight;
             tmMapPanel.updateSize(getWidth(), newHeight);
         }
+        if (multiplayerGameRunning) {
+            //int newHeight = getHeight() - tmMenuBar.getHeight() - frameBarHeight;
+            multiMapPanel.updateSize(getWidth(), getHeight());
+        }
         System.out.println("Window Size Changed: W: " + getWidth() + ", H: " + getHeight());
     }
 
@@ -129,6 +134,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             add(multiMapPanel);
             pack();
             multiMapPanel.waitForStart();
+            multiplayerGameRunning = true;
         }
 
     }

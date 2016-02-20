@@ -13,9 +13,11 @@ public class ClientPlayer {
     private int placeAlignment = 0;
     String playerName = "NoName";
     UserInterface uI;
-    
+    private boolean hasLeftGame;
+
     public ClientPlayer(String name, Dimension dim) {
         playerName = name;
+        hasLeftGame = false;
         uI = new UserInterface(dim);
         
     }
@@ -60,5 +62,12 @@ public class ClientPlayer {
     public void paintUI(Graphics g, ImageObserver imgOb) {
         uI.paint(g, imgOb);
     }
-    
+
+    public void leaveGame() {
+        hasLeftGame = true;
+    }
+
+    public boolean hasLeftGame(){
+        return hasLeftGame;
+    }
 }

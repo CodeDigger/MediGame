@@ -10,17 +10,17 @@ import java.awt.image.ImageObserver;
 
 
 public class UserInterface extends Canvas {
-    
+
     public Image[] tileImages;
     int currentImg;
-    
+
     int borderSize;
-    
+
     int tileUIwidth;
     int tileUIheight;
     int tileUIborder;
-    
-    
+
+
     public UserInterface(Dimension dim) {
         super.setSize(dim);
         borderSize = 20;
@@ -28,17 +28,20 @@ public class UserInterface extends Canvas {
         tileUIheight = 200;
         tileUIborder = 10;
     }
-    
+
     public void setTileImages(Image[] imgs, int alignment) {
         tileImages = imgs;
         currentImg = alignment;
     }
-    
+
     public void rotateTile() {
-        currentImg++;
-        if (currentImg >= tileImages.length) currentImg=0;
+        if (tileImages != null) {
+            currentImg++;
+            if (currentImg >= tileImages.length)
+                currentImg = 0;
+        }
     }
-    
+
     public void paint(Graphics g, ImageObserver imgOb) {
         Color c = new Color(40, 40, 40, 80);
         g.setColor(c);
