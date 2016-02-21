@@ -96,17 +96,17 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
 
     @Override
     public void componentHidden(ComponentEvent arg0) {
-        // TODO Auto-generated method stub
+        //No implementation
     }
 
     @Override
     public void componentMoved(ComponentEvent arg0) {
-        // TODO Auto-generated method stub
+        // No implementation
     }
 
     @Override
     public void componentShown(ComponentEvent arg0) {
-        // TODO Auto-generated method stub
+        // No implementation
     }
 
     @Override
