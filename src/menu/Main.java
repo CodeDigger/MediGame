@@ -43,6 +43,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         mainMenu = new MainMenu(this);
         add(mainMenu);
         pack();
+        
+        setLocationRelativeTo(null);
 
         addComponentListener(this);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -96,6 +98,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             setLayout(new BorderLayout());
             add(clientMapPanel);
             pack();
+            setLocationRelativeTo(null);
             frameBarHeight = getHeight() - clientMapPanel.getHeight();
             componentResized(null);
             clientMapPanel.waitForStart();
