@@ -20,6 +20,8 @@ import utilities.AudioHandler;
 
 public class ClientMapPanel extends Panel implements MouseListener, MouseMotionListener, KeyListener, MenubarListener {
 
+    private final static int initWidth = 800;
+    private final static int initHeight = 600;
     private Dimension panelDim;
 
     private ClientMapHandler mapHandler;
@@ -40,8 +42,8 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     private boolean playing = false;
     private int requestedTileStackNumber;
 
-    public ClientMapPanel(Dimension dim) {
-        panelDim = dim;
+    public ClientMapPanel() {
+        panelDim = new Dimension(initWidth, initHeight);
         setPreferredSize(panelDim);
         setBackground(Color.BLACK);
         mapHandler = new ClientMapHandler();

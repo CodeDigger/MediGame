@@ -1,7 +1,6 @@
 package multiplayer;
 
 import mapBuilder.ClientPlayer;
-import java.awt.Dimension;
 import java.io.*;
 import java.net.*;
 import java.util.logging.Level;

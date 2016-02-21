@@ -15,10 +15,7 @@ import testMode.TmMapPanel;
 import testMode.TmMenuBar;
 
 public class Main extends JFrame implements ComponentListener, ActionListener {
-
-    public static final int initWidth = 1200;
-    public static final int initHeight = 800;
-
+    
     //MENU
     MainMenu mainMenu;
     ConnectWindow connectWindow;
@@ -33,7 +30,9 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
 
     Dimension mapDim;
     Dimension menuDim;
-    int frameBarHeight;
+    int frameHeight;
+    int frameWidth;
+    
     boolean tmGameRunning = false;
     private boolean multiplayerGameRunning = false;
 
@@ -56,8 +55,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         mainMenu = null;
         System.out.println(" - - -  SETTING UP GAME  - - - ");
         int menuHeight = 80;
-        menuDim = new Dimension(initWidth, menuHeight);
-        mapDim = new Dimension(initWidth, initHeight - menuHeight);
+        menuDim = new Dimension(800, menuHeight);
+        mapDim = new Dimension(800, 800 - menuHeight);
         tmMapPanel = new TmMapPanel(mapDim);
         tmMenuBar = new TmMenuBar(menuDim);
         tmGameRunning = true;
@@ -70,7 +69,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             add(tmMapPanel, BorderLayout.CENTER);
             add(tmMenuBar, BorderLayout.SOUTH);
             pack();
-            frameBarHeight = getHeight() - tmMapPanel.getHeight() - tmMenuBar.getHeight();
+            frameHeight = getHeight() - tmMapPanel.getHeight() - tmMenuBar.getHeight();
             componentResized(null);
             tmMenuBar.initMapMenu(tmMapPanel);
         } else {
@@ -84,7 +83,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         String ip = connectWindow.getIP();
         int port = connectWindow.getPort();
         System.out.println("CLIENT: Connecting to server: " + ip + ":" + port);
-        clientMapPanel = new ClientMapPanel(new Dimension(initWidth, initHeight));
+        clientMapPanel = new ClientMapPanel();
         new MediClient(ip, port, clientMapPanel).start();
         multiplayerGameRunning = true;
         System.out.println(" - - -  _________________  - - -");
@@ -99,7 +98,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             add(clientMapPanel);
             pack();
             setLocationRelativeTo(null);
-            frameBarHeight = getHeight() - clientMapPanel.getHeight();
+            frameHeight = getHeight() - clientMapPanel.getHeight();
+            frameWidth = getWidth() - clientMapPanel.getWidth();
             componentResized(null);
             clientMapPanel.waitForStart();
         } else {
@@ -110,16 +110,17 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     public static void main(String[] args) {
         new Main();
     }
-
+    
     @Override
     public void componentResized(ComponentEvent arg0) {
         if (tmGameRunning) {
-            int newHeight = getHeight() - tmMenuBar.getHeight() - frameBarHeight;
+            int newHeight = getHeight() - tmMenuBar.getHeight() - frameHeight;
             tmMapPanel.updateSize(getWidth(), newHeight);
         }
         if (multiplayerGameRunning) {
-            int newHeight = getHeight() - frameBarHeight;
-            clientMapPanel.updateSize(getWidth(), newHeight);
+            int newHeight = getHeight() - frameHeight;
+            int newWidth = getWidth() - frameWidth;
+            clientMapPanel.updateSize(newWidth, newHeight);
         }
         System.out.println("Window Size Changed: W: " + getWidth() + ", H: " + getHeight());
     }
