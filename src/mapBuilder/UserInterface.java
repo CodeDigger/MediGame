@@ -1,6 +1,7 @@
 
 package mapBuilder;
 
+import events.ServerMessageListener;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,7 +12,7 @@ import java.awt.image.ImageObserver;
 import java.util.Calendar;
 
 
-public class UserInterface extends Canvas {
+public class UserInterface extends Canvas implements ServerMessageListener {
 
     public Image[] tileImages;
     int currentImg;
@@ -92,6 +93,11 @@ public class UserInterface extends Canvas {
         for (int i = 0; i < messages.length; i++) {
             g.drawString(cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.SECOND) +" - "+ messages[i], borderSize+tileUIwidth+borderSize+logUIborder, getHeight()-borderSize-logUIborder-fontSpace*(i)-fontSize*i);
         }
+    }
+
+    @Override
+    public void serverMessage(String s) {
+        newMessage(s);
     }
 
 

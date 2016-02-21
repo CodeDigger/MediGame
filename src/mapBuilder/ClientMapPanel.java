@@ -1,5 +1,6 @@
 package mapBuilder;
 
+import events.MapPanelListener;
 import tiles.TileStack;
 import events.MenubarListener;
 import java.awt.Color;
@@ -35,6 +36,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     ClientPlayer player;
 
     AudioHandler audioHandler;
+    MapPanelListener mPL;
 
     UserInterface uI;
     boolean waitingForStart = true;
@@ -85,7 +87,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         }
     }
 
-    public void start() {
+    public void runGame() {
         waitingForStart = false;
     }
 
@@ -162,21 +164,23 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
             pointX = mE.getX() - mapX;
             pointY = mE.getY() - mapY;
             TileStack tS = mapHandler.highlightStacks(pointX, pointY);
+            
             if (tS != null && tileRequestMode) { //Tile request
-                requestedTileStackNumber = mapHandler.getTileStackNumber(tS);
                 tS.drawStack();
+                mPL.tileDrawn(mapHandler.getTileStackNumber(tS));
                 tileRequestMode = false;
-                System.out.println("CLIENT: Flagged for tile request");
                 repaint();
             } else { // Tile placement
-                Tile tile = mapHandler.getMouseTile(mE.getY(), mE.getX());
-
-                if (tile != null && playing && player.checkTile() != null) {
-                    int currentRow = tile.getRow();
-                    int currentCol = tile.getCol();
-
-                    if(mapHandler.playerPlaceLand(player.checkTile(), currentRow, currentCol)) {
+                Tile mapCell = mapHandler.getMouseTile(mE.getY(), mE.getX());
+                Tile playerTile = player.checkTile();
+                if (mapCell != null && playing && playerTile != null) {
+                    int currentRow = mapCell.getRow();
+                    int currentCol = mapCell.getCol();
+                    
+                    if(mapHandler.playerPlaceLand(playerTile, currentRow, currentCol)) {
+                        player.takeTile();
                         uI.setTileImages(null, 0);
+                        mPL.tilePlaced(playerTile.getRow(), playerTile.getCol(), playerTile.getType(), playerTile.getAlignment());
                         playing = false;
                         tileRequestMode = true;
                     }
@@ -252,7 +256,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
                 player.rotateTile();
                 break;
             case KeyEvent.VK_Q:
-                player.leaveGame();
+                mPL.clientDisconnect();
                 break;
         }
     }
@@ -301,6 +305,10 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
 
     public int getRequestedTileStackNumber() {
         return requestedTileStackNumber;
+    }
+
+    public void addMapPanelListener(MapPanelListener mPL) {
+        this.mPL = mPL;
     }
 
 }

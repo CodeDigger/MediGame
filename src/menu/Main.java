@@ -7,6 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import mapBuilder.ClientMapPanel;
@@ -27,6 +30,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     //MULTIPLAYER
     MediServer server;
     ClientMapPanel clientMapPanel;
+    MediClient mediClient;
 
     Dimension mapDim;
     Dimension menuDim;
@@ -84,7 +88,15 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         int port = connectWindow.getPort();
         System.out.println("CLIENT: Connecting to server: " + ip + ":" + port);
         clientMapPanel = new ClientMapPanel();
-        new MediClient(ip, port, clientMapPanel).start();
+        
+        
+        try {
+            mediClient = new MediClient(ip, port, clientMapPanel);
+            mediClient.initServerConnection();
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         multiplayerGameRunning = true;
         System.out.println(" - - -  _________________  - - -");
     }

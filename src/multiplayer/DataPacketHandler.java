@@ -7,7 +7,7 @@ package multiplayer;
  */
 public class DataPacketHandler {
 
-    public static final int PACKETTYPE_STATUSUPDATE = 0;
+    public static final int PACKETTYPE_STARTPLAY = 0;
     public static final int PACKETTYPE_TILEREQUEST = 1;
     public static final int PACKETTYPE_TILEDELIVERY = 2;
     public static final int PACKETTYPE_TILEPLACEMENT = 3;
@@ -37,7 +37,7 @@ public class DataPacketHandler {
     }
 
     public static String createStatusUpdatePackage(int status){
-        return (PACKETTYPE_STATUSUPDATE + ":" + status);
+        return (PACKETTYPE_STARTPLAY + ":" + status);
     }
 
     public static String createTileRequestPackage(int stackNumber){
@@ -59,8 +59,8 @@ public class DataPacketHandler {
     public static int[] handlePacket(String packet){
         int[] returnInt;
         switch (Character.getNumericValue(packet.charAt(0))) { //The first character in the packet is the package type
-            case PACKETTYPE_STATUSUPDATE:
-                returnInt = new int[]{PACKETTYPE_STATUSUPDATE, Character.getNumericValue(packet.charAt(2))};
+            case PACKETTYPE_STARTPLAY:
+                returnInt = new int[]{PACKETTYPE_STARTPLAY, Character.getNumericValue(packet.charAt(2))};
                 break;
             case PACKETTYPE_TILEREQUEST:
                 int stackNumber = Integer.parseInt(packet.substring(2, packet.length()));

@@ -1,25 +1,24 @@
 package multiplayer;
 
+import events.MapPanelListener;
+import events.ServerMessageListener;
+import java.io.BufferedReader;
 import mapBuilder.ClientPlayer;
 import mapBuilder.ClientMapHandler;
 import mapBuilder.ClientMapPanel;
 import tiles.Tile;
 import tiles.TileHandler;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Tobias on 2015-07-30.
  * Medi client class
  */
-public class MediClient extends Thread {
+public class MediClient implements ServerMessageListener, MapPanelListener {
 
     private static final int WAIT = 0;
     private static final int PLAY = 1;
@@ -30,6 +29,8 @@ public class MediClient extends Thread {
     ClientMapHandler mapHandler;
 
     ClientPlayer player;
+    PrintWriter outServer;
+    BufferedReader inServer;
 
 
     public MediClient(String ip, int port, ClientMapPanel mapPanel) {
@@ -38,129 +39,81 @@ public class MediClient extends Thread {
         this.mapPanel = mapPanel;
         this.mapHandler = mapPanel.getMapHandler();
 
-
         player = new ClientPlayer("Player Name", mapPanel.getSize());
         mapPanel.setPlayer(player);
         mapPanel.setUI(player.getUI());
+        
         player.messagePlager("Meddelande 1");
         player.messagePlager("Meddelande 2");
         player.messagePlager("Meddelande 3");
         player.messagePlager("Meddelande 4");
         player.messagePlager("Meddelande 5");
-        mapPanel.start();
+        
+        
+        mapPanel.runGame();
+    }
+
+    public void initServerConnection() throws IOException {
+        mapPanel.addMapPanelListener(this);
+        
+        Socket socket = new Socket(hostName, portNumber);
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        
+        outServer = out;
+        
+        new MessageReciever(in, this).start();
+        
     }
 
     @Override
-    public void run() {
+    public void serverMessage(String serverMessage) {
+        System.out.println("CLIENT - From server: " + serverMessage);
 
-        try (
-                Socket socket = new Socket(hostName, portNumber);
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()))
-        ) {
-
-            String fromServerString;
-            int state = WAIT;
-
-            while (true) {
-                switch (state) {
-                    case WAIT:
-                        System.out.println("CLIENT - Current state is WAIT");
-                        fromServerString = in.readLine();
-                        System.out.println("CLIENT - From server: " + fromServerString);
-
-                        int[] packet = DataPacketHandler.handlePacket(fromServerString);
-                        switch (packet[DataPacketHandler.SUBPACKET_PACKETTYPE]) {
-                            case DataPacketHandler.PACKETTYPE_STATUSUPDATE:
-                                state = packet[DataPacketHandler.SUBPACKET_STATUS];
-                                break;
-                            case DataPacketHandler.PACKETTYPE_TILEPLACEMENT:
-                                int row = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_ROW];
-                                int col = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_COL];
-                                int type = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_TYPE];
-                                int alignment = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_ALIGNMENT];
-                                mapHandler.placeLandFromServer(row, col, type, alignment);
-                                break;
-                            case DataPacketHandler.PACKETTYPE_TILEDRAWN:
-                                int stackNumber = packet[DataPacketHandler.SUBPACKET_STACKNUMBER];
-                                mapHandler.removeTileFromStack(stackNumber);
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    case PLAY:
-                        System.out.println("CLIENT - Current state is PLAY");
-
-                        int requestedStackNumber = waitForDraw(); //Waiting for player to request tile from stack
-                        if (player.hasLeftGame()) break; //Quit if player has left game
-
-                        out.println(DataPacketHandler.createTileRequestPackage(requestedStackNumber)); // Request tile from server:
-                        fromServerString = in.readLine(); // Get tile from server:
-                        int[] tileTypeData = DataPacketHandler.handlePacket(fromServerString); //Extract tile data
-                        Tile tileToPlay = TileHandler.initLand
-                                (tileTypeData[DataPacketHandler.SUBPACKET_TILETYPETOPLAY]); //Create a tile from tile data
-                        player.giveTile(tileToPlay); //Give player the tile to play with
-
-                        waitForPlay(); //Wait for player to make its move...
-                        if (player.hasLeftGame()) break; //Quit if player has left game
-
-                        player.takeTile(); //... and take the tile from the player
-                        out.println(DataPacketHandler.createTilePlacementPackage(tileToPlay.getRow(),
-                                tileToPlay.getCol(), tileToPlay.getType(), tileToPlay.getAlignment())); // Send tile placement package to server!
-
-                        state = WAIT;
-
-                        break;
-                    default:
-                        break;
-                }
-                mapPanel.repaint();
-                if (player.hasLeftGame()) {
-                    out.println(DataPacketHandler.createLeaveGamePackage()); //Tell server you have left game
-                    break;
-                }
-            }
-
-        } catch (UnknownHostException e) {
-            System.err.println("Don't know about host " + hostName);
-            System.exit(1);
-        } catch (IOException e) {
-            System.err.println("Couldn't get I/O for the connection to "
-                    + hostName);
-            System.exit(1);
+        int[] packet = DataPacketHandler.handlePacket(serverMessage);
+        switch (packet[DataPacketHandler.SUBPACKET_PACKETTYPE]) {
+            case DataPacketHandler.PACKETTYPE_STARTPLAY:
+                mapPanel.permissionToPlay();
+                break;
+            case DataPacketHandler.PACKETTYPE_TILEPLACEMENT:
+                int row = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_ROW];
+                int col = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_COL];
+                int type = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_TYPE];
+                int alignment = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_ALIGNMENT];
+                mapHandler.placeLandFromServer(row, col, type, alignment);
+                break;
+            case DataPacketHandler.PACKETTYPE_TILEDRAWN:
+                int stackNumber = packet[DataPacketHandler.SUBPACKET_STACKNUMBER];
+                mapHandler.removeTileFromStack(stackNumber);
+                break;
+            case DataPacketHandler.PACKETTYPE_TILEDELIVERY:
+                Tile tileToPlay = TileHandler.initLand(packet[DataPacketHandler.SUBPACKET_TILETYPETOPLAY]); //Create a tile from tile data
+                player.giveTile(tileToPlay);
+                break;
+            default:
+                break;
         }
+        mapPanel.repaint();
     }
 
-    private int waitForDraw() {
-        while(mapPanel.getTileRequestMode()) {
-            if (player.hasLeftGame()) {
-                break;
-            }
-            try {
-                //Wait
-                Thread.sleep(10);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(MediClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return mapPanel.getRequestedTileStackNumber();
+    @Override
+    public void tileDrawn(int stackNumber) {
+        outServer.println(DataPacketHandler.createTileRequestPackage(stackNumber)); // Request tile from server:
     }
 
-    private void waitForPlay() {
-        mapPanel.permissionToPlay();
-        while(mapPanel.isPlaying()) {
-            if (player.hasLeftGame()) {
-                break;
-            }
-            try {
-                //Wait
-                Thread.sleep(10);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(MediClient.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+    @Override
+    public void tilePlaced(int row, int col, int tileType, int alignment) {
+        outServer.println(DataPacketHandler.createTilePlacementPackage(row,col,tileType,alignment)); // Send tile placement package to server!
+    }
+
+    @Override
+    public void chatMessage(String s) {
+        //TODO Implement Chat
+    }
+
+    @Override
+    public void clientDisconnect() {
+        outServer.println(DataPacketHandler.createLeaveGamePackage());
     }
 
 }
