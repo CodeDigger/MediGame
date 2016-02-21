@@ -29,15 +29,16 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
 
     private int lastMouseX;
     private int lastMouseY;
-    
+
     ClientPlayer player;
 
     AudioHandler audioHandler;
-    
+
     UserInterface uI;
     boolean waitingForStart = true;
     private boolean tileRequestMode = true;
     private boolean playing = false;
+    private int requestedTileStackNumber;
 
     public ClientMapPanel(Dimension dim) {
         panelDim = dim;
@@ -47,26 +48,26 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
-        
+
         audioHandler = new AudioHandler();
-        audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");   
+        audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");
     }
-    
+
     public void setPlayer(ClientPlayer p) {
         player = p;
     }
-    
+
     public void setUI(UserInterface uI) {
         this.uI = uI;
     }
-    
+
 
     VolatileImage mapImage = null;
     VolatileImage updateImage = null;
     private long updateTime;
     private long t1;
     private int fps;
-    
+
     public void paintMap(Graphics g) {
         if (mapImage == null) {
             mapImage = createVolatileImage(mapHandler.getMapWidth(), mapHandler.getMapHeight());
@@ -75,27 +76,27 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         mapHandler.paint(mapImage.getGraphics());
         g.drawImage(mapImage, mapX, mapY, this);
     }
-    
+
     public void waitForStart() {
         while(waitingForStart) {
             //Do nothing
         }
     }
-    
+
     public void start() {
         waitingForStart = false;
     }
-    
+
     @Override
     public void paint(Graphics g) {
         long p0 = System.currentTimeMillis();
-        
+
         paintMap(g);
-        
+
         if (uI != null) {
-           uI.paint(g, this);
+            uI.paint(g, this);
         }
-        
+
         g.setColor(Color.WHITE);
         g.drawString("    - System Info -", 10, 16);
         g.drawString(" Render Time: " + (long) (System.currentTimeMillis() - p0) + " ms", 10, 32);
@@ -109,7 +110,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
             updateImage = createVolatileImage(panelDim.width, panelDim.height);
             requestFocus();
         }
-        
+
         updateImage.getGraphics().clearRect(0, 0, panelDim.width, panelDim.height);
         paint(updateImage.getGraphics());
         g.drawImage(updateImage, 0, 0, null);
@@ -159,13 +160,15 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
             pointX = mE.getX() - mapX;
             pointY = mE.getY() - mapY;
             TileStack tS = mapHandler.highlightStacks(pointX, pointY);
-            if (tS != null) {
-                  tileRequestMode = false;
-                  System.out.println("CLIENT: Flagged for tile request");
+            if (tS != null && tileRequestMode) { //Tile request
+                requestedTileStackNumber = mapHandler.getTileStackNumber(tS);
+                tS.drawStack();
+                tileRequestMode = false;
+                System.out.println("CLIENT: Flagged for tile request");
                 repaint();
-            } else {
+            } else { // Tile placement
                 Tile tile = mapHandler.getMouseTile(mE.getY(), mE.getX());
-                
+
                 if (tile != null && playing && player.checkTile() != null) {
                     int currentRow = tile.getRow();
                     int currentCol = tile.getCol();
@@ -185,7 +188,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
 
     int pointX = 0;
     int pointY = 0;
-    
+
     @Override
     public void mouseMoved(MouseEvent mME) {
         mapHandler.updateHighlight(mME);
@@ -193,7 +196,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         pointX = mME.getX()-mapX;
         pointY = mME.getY()-mapY;
         mapHandler.highlightStacks(pointX,pointY);
-        
+
         repaint();
     }
 
@@ -224,7 +227,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
             int dY = mME.getY() - lastMouseY;
 
             moveMapLocation(dX, dY, panelDim.width, panelDim.height);
-            
+
             lastMouseX = mME.getX();
             lastMouseY = mME.getY();
         }
@@ -277,21 +280,25 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         }
         repaint();
     }
-    
+
     public void permissionToPlay() {
         playing = true;
     }
-    
+
     public boolean isPlaying() {
         return playing;
     }
-    
-    public boolean getTileRequest() {
+
+    public boolean getTileRequestMode() {
         return tileRequestMode;
     }
-    
+
     public ClientMapHandler getMapHandler() {
         return mapHandler;
+    }
+
+    public int getRequestedTileStackNumber() {
+        return requestedTileStackNumber;
     }
 
 }
