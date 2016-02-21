@@ -76,6 +76,7 @@ public class MediClient extends Thread {
                             case DataPacketHandler.PACKETTYPE_TILEDRAWN:
                                 int stackNumber = packet[DataPacketHandler.SUBPACKET_STACKNUMBER];
                                 mapHandler.removeTileFromStack(stackNumber);
+                                mapPanel.repaint();
                                 break;
                             default:
                                 break;
