@@ -17,29 +17,29 @@ import testMode.TmMenuBar;
 public class Main extends JFrame implements ComponentListener, ActionListener {
 
     public static final int initWidth = 1200;
-    public static final int initHeight = 600;
+    public static final int initHeight = 800;
 
     //MENU
     MainMenu mainMenu;
     ConnectWindow connectWindow;
-    
+
     //TEST MODE
     TmMenuBar tmMenuBar;
     TmMapPanel tmMapPanel;
-    
+
     //MULTIPLAYER
     MediServer server;
-    ClientMapPanel multiMapPanel;
+    ClientMapPanel clientMapPanel;
 
     Dimension mapDim;
     Dimension menuDim;
     int frameBarHeight;
-    boolean gameRunning = false;
+    boolean tmGameRunning = false;
     private boolean multiplayerGameRunning = false;
 
     public Main() {
         super("Medi");
-        
+
         mainMenu = new MainMenu(this);
         add(mainMenu);
         pack();
@@ -48,33 +48,60 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
-    
-    
-    private void setUpGame() {
+
+    private void setUpTMGame() {
         remove(mainMenu);
         mainMenu = null;
         System.out.println(" - - -  SETTING UP GAME  - - - ");
-        mapDim = new Dimension(initWidth, initHeight);
-        menuDim = new Dimension(mapDim.width, 80);
+        int menuHeight = 80;
+        menuDim = new Dimension(initWidth, menuHeight);
+        mapDim = new Dimension(initWidth, initHeight - menuHeight);
         tmMapPanel = new TmMapPanel(mapDim);
         tmMenuBar = new TmMenuBar(menuDim);
-        gameRunning = true;
+        tmGameRunning = true;
         System.out.println(" - - -  ________________  - - -");
     }
 
-    private void startGame() {
-        if (gameRunning) {
+    private void startTMGame() {
+        if (tmGameRunning) {
             setLayout(new BorderLayout());
             add(tmMapPanel, BorderLayout.CENTER);
             add(tmMenuBar, BorderLayout.SOUTH);
             pack();
             frameBarHeight = getHeight() - tmMapPanel.getHeight() - tmMenuBar.getHeight();
-            tmMenuBar.initMapMenu(tmMapPanel);
             componentResized(null);
+            tmMenuBar.initMapMenu(tmMapPanel);
         } else {
             System.out.println("- [ERROR] -: Unable to start game. Game not set up!");
         }
         pack();
+    }
+
+    private void setUpMultiplayerGame() {
+        System.out.println(" - - -  PREPARING TO JOIN  - - - ");
+        String ip = connectWindow.getIP();
+        int port = connectWindow.getPort();
+        System.out.println("CLIENT: Connecting to server: " + ip + ":" + port);
+        clientMapPanel = new ClientMapPanel(new Dimension(initWidth, initHeight));
+        new MediClient(ip, port, clientMapPanel).start();
+        multiplayerGameRunning = true;
+        System.out.println(" - - -  _________________  - - -");
+    }
+
+    private void startMultiplayerGame() {
+        if (multiplayerGameRunning) {
+            connectWindow.dispose();
+            remove(mainMenu);
+            mainMenu = null;
+            setLayout(new BorderLayout());
+            add(clientMapPanel);
+            pack();
+            frameBarHeight = getHeight() - clientMapPanel.getHeight();
+            componentResized(null);
+            clientMapPanel.waitForStart();
+        } else {
+            System.out.println("- [ERROR] -: Unable to start game. Game not set up!");
+        }
     }
 
     public static void main(String[] args) {
@@ -83,13 +110,13 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
 
     @Override
     public void componentResized(ComponentEvent arg0) {
-        if (gameRunning) {
+        if (tmGameRunning) {
             int newHeight = getHeight() - tmMenuBar.getHeight() - frameBarHeight;
             tmMapPanel.updateSize(getWidth(), newHeight);
         }
         if (multiplayerGameRunning) {
-            //int newHeight = getHeight() - tmMenuBar.getHeight() - frameBarHeight;
-            multiMapPanel.updateSize(getWidth(), getHeight());
+            int newHeight = getHeight() - frameBarHeight;
+            clientMapPanel.updateSize(getWidth(), newHeight);
         }
         System.out.println("Window Size Changed: W: " + getWidth() + ", H: " + getHeight());
     }
@@ -112,8 +139,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals(MainMenu.START_TEST)) {
-            setUpGame();
-            startGame();
+            setUpTMGame();
+            startTMGame();
         } else if (e.getActionCommand().equals(MainMenu.START_SERVER)) {
             server = new MediServer(4444, 2);
             System.out.println("- CREATING SERVER:");
@@ -121,20 +148,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         } else if (e.getActionCommand().equals(MainMenu.JOIN_SERVER)) {
             connectWindow = new ConnectWindow(this);
         } else if (e.getSource() == connectWindow.getConnectButton()) {
-            String ip = connectWindow.getIP();
-            int port = connectWindow.getPort();
-            System.out.println("CLIENT: Connecting to server: "+ip+":"+port);
-            
-            multiMapPanel = new ClientMapPanel(getSize());
-            new MediClient(ip, port, multiMapPanel).start();
-            connectWindow.dispose();
-            remove(mainMenu);
-            mainMenu = null;
-            setLayout(new BorderLayout());
-            add(multiMapPanel);
-            pack();
-            multiMapPanel.waitForStart();
-            multiplayerGameRunning = true;
+            setUpMultiplayerGame();
+            startMultiplayerGame();
         }
 
     }
