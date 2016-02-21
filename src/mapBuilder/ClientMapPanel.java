@@ -20,8 +20,8 @@ import utilities.AudioHandler;
 
 public class ClientMapPanel extends Panel implements MouseListener, MouseMotionListener, KeyListener, MenubarListener {
 
-    private final static int initWidth = 800;
-    private final static int initHeight = 600;
+    private final static int initWidth = 1200;
+    private final static int initHeight = 700;
     private Dimension panelDim;
 
     private ClientMapHandler mapHandler;
