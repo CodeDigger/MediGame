@@ -1,5 +1,5 @@
-TODO Tile request from client also sends which stack to draw from
-TODO When active client draws a tile from stack it is immediately also drawn from other clients stacks
+FIXED: Tile request from client also sends which stack to draw from
+FIXES: When active client draws a tile from stack it is immediately also drawn from other clients stacks
 TODO Fix disconnecting from server
 TODO Counting points on server
 TODO Ad more tile types
