@@ -58,7 +58,7 @@ public class MediServerThread extends Thread {
                         outputLine = mediProtocol.getMessage(); //Waits for the server to give a message to client
                         out.println(outputLine); //Send the message to the client
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(10);
                         } catch (InterruptedException e) {}
                         break;
                     case CLIENT_PLAYING:
@@ -77,7 +77,7 @@ public class MediServerThread extends Thread {
                             break;
                         }
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(10);
                         } catch (InterruptedException e) {}
                         break;
                     default:

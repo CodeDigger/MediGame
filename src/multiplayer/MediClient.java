@@ -76,6 +76,7 @@ public class MediClient extends Thread {
                             case DataPacketHandler.PACKETTYPE_TILEDRAWN:
                                 int stackNumber = packet[DataPacketHandler.SUBPACKET_STACKNUMBER];
                                 mapHandler.removeTileFromStack(stackNumber);
+                                System.out.println("Repainted stack");
                                 break;
                             default:
                                 break;
@@ -107,6 +108,7 @@ public class MediClient extends Thread {
                     default:
                         break;
                 }
+                mapPanel.repaint();
                 if (player.hasLeftGame()) {
                     out.println(DataPacketHandler.createLeaveGamePackage()); //Tell server you have left game
                     break;
@@ -130,7 +132,7 @@ public class MediClient extends Thread {
             }
             try {
                 //Wait
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException ex) {
                 Logger.getLogger(MediClient.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -146,7 +148,7 @@ public class MediClient extends Thread {
             }
             try {
                 //Wait
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException ex) {
                 Logger.getLogger(MediClient.class.getName()).log(Level.SEVERE, null, ex);
             }
