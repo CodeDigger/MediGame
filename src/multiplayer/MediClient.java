@@ -35,9 +35,14 @@ public class MediClient extends Thread {
         this.mapHandler = mapPanel.getMapHandler();
 
 
-        player = new ClientPlayer("Player Name", new Dimension(800,600));
+        player = new ClientPlayer("Player Name", mapPanel.getSize());
         mapPanel.setPlayer(player);
         mapPanel.setUI(player.getUI());
+        player.messagePlager("Meddelande 1");
+        player.messagePlager("Meddelande 2");
+        player.messagePlager("Meddelande 3");
+        player.messagePlager("Meddelande 4");
+        player.messagePlager("Meddelande 5");
         mapPanel.start();
     }
 
@@ -76,7 +81,6 @@ public class MediClient extends Thread {
                             case DataPacketHandler.PACKETTYPE_TILEDRAWN:
                                 int stackNumber = packet[DataPacketHandler.SUBPACKET_STACKNUMBER];
                                 mapHandler.removeTileFromStack(stackNumber);
-                                System.out.println("Repainted stack");
                                 break;
                             default:
                                 break;

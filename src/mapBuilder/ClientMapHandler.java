@@ -225,7 +225,7 @@ public class ClientMapHandler {
 
         //TO THE LEFT
         if (col - 1 >= 0) {
-            t = map.getTile(row, col);
+            t = map.getTile(row, col-1);
         }
         if (t == null) {
             //Do nothing

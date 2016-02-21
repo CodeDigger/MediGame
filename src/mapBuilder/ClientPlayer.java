@@ -26,6 +26,10 @@ public class ClientPlayer {
         playerName = name;
     }
     
+    public void messagePlager(String s) {
+        uI.newMessage(s);
+    }
+    
     public void giveTile(Tile t) {
         toBePlaced = t;
         uI.setTileImages(t.getAllImages(), t.getAlignment());
