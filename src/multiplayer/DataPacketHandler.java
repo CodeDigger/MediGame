@@ -86,7 +86,7 @@ public class DataPacketHandler {
                 break;
             case PACKETTYPE_TILEDRAWN:
                 int stackDrawnNumber = Integer.parseInt(packet.substring(2, packet.length()));
-                returnInt = new int[]{PACKETTYPE_TILEREQUEST, stackDrawnNumber};
+                returnInt = new int[]{PACKETTYPE_TILEDRAWN, stackDrawnNumber};
                 break;
             default:
                 returnInt = new int[]{0,0};
