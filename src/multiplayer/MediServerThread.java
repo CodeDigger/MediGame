@@ -96,5 +96,6 @@ public class MediServerThread extends Thread {
 
     private void clientDisconnected() {
         clientConnected = false;
+        mediProtocol.clientDisconected();
     }
 }

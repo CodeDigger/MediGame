@@ -13,6 +13,7 @@ public class DataPacketHandler {
     public static final int PACKETTYPE_TILEPLACEMENT = 3;
     public static final int PACKETTYPE_LEAVEGAME = 4;
     public static final int PACKETTYPE_TILEDRAWN = 5;
+    public static final int PACKETTYPE_SERVERMESSAGE = 6;
 
     public static final int STATUS_WAIT = 0;
     public static final int STATUS_PLAY = 1;
@@ -42,13 +43,18 @@ public class DataPacketHandler {
     public static String createTileRequestPackage(int stackNumber){
         return (PACKETTYPE_TILEREQUEST + ":" + stackNumber);
     }
+
     public static String createLeaveGamePackage(){
         return String.valueOf(PACKETTYPE_LEAVEGAME);
     }
+
     public static String createTileDrawnPackage(int stackNumber){
         return (PACKETTYPE_TILEDRAWN + ":" + stackNumber);
     }
 
+    public static String createServerMessage(String message){
+        return (PACKETTYPE_SERVERMESSAGE + ":" + message);
+    }
 
     public static int[] handlePacket(String packet){
         int[] returnInt;
@@ -88,11 +94,18 @@ public class DataPacketHandler {
                 int stackDrawnNumber = Integer.parseInt(packet.substring(2, packet.length()));
                 returnInt = new int[]{PACKETTYPE_TILEDRAWN, stackDrawnNumber};
                 break;
+            case PACKETTYPE_SERVERMESSAGE:
+                returnInt = new int[]{PACKETTYPE_SERVERMESSAGE};
+                break;
             default:
                 returnInt = new int[]{0,0};
                 break;
         }
         return returnInt;
+    }
+
+    public String getServerMessage(String message){
+        return message.substring(2, message.length());
     }
 
 }
