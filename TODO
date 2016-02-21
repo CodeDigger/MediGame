@@ -4,4 +4,5 @@ TODO Fix disconnecting from server
 TODO Counting points on server
 TODO Ad more tile types
 TODO Distribution of tiles in the stacks should be fixed, and not random
-TODO 
+TODO Wait screen when connecting to server until all clients connected
+TODO Add meepos

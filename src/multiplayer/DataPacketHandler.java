@@ -12,6 +12,7 @@ public class DataPacketHandler {
     public static final int PACKETTYPE_TILEDELIVERY = 2;
     public static final int PACKETTYPE_TILEPLACEMENT = 3;
     public static final int PACKETTYPE_LEAVEGAME = 4;
+    public static final int PACKETTYPE_TILEDRAWN = 5;
 
     public static final int STATUS_WAIT = 0;
     public static final int STATUS_PLAY = 1;
@@ -23,6 +24,8 @@ public class DataPacketHandler {
     public static final int SUBPACKET_TILETOPLACE_COL = 2;
     public static final int SUBPACKET_TILETOPLACE_TYPE = 3;
     public static final int SUBPACKET_TILETOPLACE_ALIGNMENT = 4;
+    public static final int SUBPACKET_STACKNUMBER = 1;
+
 
     public static String createTilePlacementPackage(int row, int col, int tileType, int tileAlignment){
         return (PACKETTYPE_TILEPLACEMENT + ":" + row + ":" + col + ":" + tileType + ":" + tileAlignment);
@@ -36,22 +39,26 @@ public class DataPacketHandler {
         return (PACKETTYPE_STATUSUPDATE + ":" + status);
     }
 
-    public static String createTileRequestPackage(){
-        return String.valueOf(PACKETTYPE_TILEREQUEST);
+    public static String createTileRequestPackage(int stackNumber){
+        return (PACKETTYPE_TILEREQUEST + ":" + stackNumber);
     }
     public static String createLeaveGamePackage(){
         return String.valueOf(PACKETTYPE_LEAVEGAME);
+    }
+    public static String createTileDrawnPackage(int stackNumber){
+        return (PACKETTYPE_TILEDRAWN + ":" + stackNumber);
     }
 
 
     public static int[] handlePacket(String packet){
         int[] returnInt;
-        switch (Character.getNumericValue(packet.charAt(0))) {
+        switch (Character.getNumericValue(packet.charAt(0))) { //The first character in the packet is the package type
             case PACKETTYPE_STATUSUPDATE:
                 returnInt = new int[]{PACKETTYPE_STATUSUPDATE, Character.getNumericValue(packet.charAt(2))};
                 break;
             case PACKETTYPE_TILEREQUEST:
-                returnInt = new int[]{PACKETTYPE_TILEREQUEST};
+                int stackNumber = Integer.parseInt(packet.substring(2, packet.length()));
+                returnInt = new int[]{PACKETTYPE_TILEREQUEST, stackNumber};
                 break;
             case PACKETTYPE_TILEDELIVERY:
                 int tileDeliveryType = Integer.parseInt(packet.substring(2, packet.length()));

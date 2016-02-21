@@ -73,6 +73,10 @@ public class MediClient extends Thread {
                                 int alignment = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_ALIGNMENT];
                                 mapHandler.placeLandFromServer(row, col, type, alignment);
                                 break;
+                            case DataPacketHandler.PACKETTYPE_TILEDRAWN:
+                                int stackNumber = packet[DataPacketHandler.SUBPACKET_STACKNUMBER];
+                                mapHandler.removeTileFromStack(stackNumber);
+                                break;
                             default:
                                 break;
                         }
@@ -80,23 +84,22 @@ public class MediClient extends Thread {
                     case PLAY:
                         System.out.println("CLIENT - Current state is PLAY");
 
-                        waitForDraw(); //Waiting for player to request tile from stack
+                        int requestedStackNumber = waitForDraw(); //Waiting for player to request tile from stack
                         if (player.hasLeftGame()) break; //Quit if player has left game
 
-                        out.println(DataPacketHandler.createTileRequestPackage()); // Request tile from server:
-
+                        out.println(DataPacketHandler.createTileRequestPackage(requestedStackNumber)); // Request tile from server:
                         fromServerString = in.readLine(); // Get tile from server:
                         int[] tileTypeData = DataPacketHandler.handlePacket(fromServerString); //Extract tile data
                         Tile tileToPlay = TileHandler.initLand
                                 (tileTypeData[DataPacketHandler.SUBPACKET_TILETYPETOPLAY]); //Create a tile from tile data
-
                         player.giveTile(tileToPlay); //Give player the tile to play with
+
                         waitForPlay(); //Wait for player to make its move...
                         if (player.hasLeftGame()) break; //Quit if player has left game
+
                         player.takeTile(); //... and take the tile from the player
-                        // Send tile placement package to server!
                         out.println(DataPacketHandler.createTilePlacementPackage(tileToPlay.getRow(),
-                                tileToPlay.getCol(), tileToPlay.getType(), tileToPlay.getAlignment()));
+                                tileToPlay.getCol(), tileToPlay.getType(), tileToPlay.getAlignment())); // Send tile placement package to server!
 
                         state = WAIT;
 
@@ -120,8 +123,8 @@ public class MediClient extends Thread {
         }
     }
 
-    private void waitForDraw() {
-        while(mapPanel.getTileRequest()) {
+    private int waitForDraw() {
+        while(mapPanel.getTileRequestMode()) {
             if (player.hasLeftGame()) {
                 break;
             }
@@ -132,6 +135,7 @@ public class MediClient extends Thread {
                 Logger.getLogger(MediClient.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        return mapPanel.getRequestedTileStackNumber();
     }
 
     private void waitForPlay() {

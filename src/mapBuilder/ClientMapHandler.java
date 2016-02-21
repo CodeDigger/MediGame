@@ -48,8 +48,8 @@ public class ClientMapHandler {
         System.out.println("- Active tile types: " + TileHandler.DIFFERENT_TYPES);
 
 
-        int centerRow = (int) (yCount / 2);
-        int centerCol = (int) (xCount / 2);
+        int centerRow = yCount / 2;
+        int centerCol = xCount / 2;
         
         int w = TileHandler.getWidth();
         int h = TileHandler.getHeight();
@@ -356,5 +356,11 @@ public class ClientMapHandler {
         return tile;
     }
 
-    
+    public int getTileStackNumber(TileStack tileStack){
+        return map.getStackList().indexOf(tileStack);
+    }
+
+    public void removeTileFromStack(int stackNumber){
+        map.getStack(stackNumber).drawStack();
+    }
 }

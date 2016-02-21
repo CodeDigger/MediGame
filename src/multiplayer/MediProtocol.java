@@ -37,12 +37,16 @@ public class MediProtocol {
     }
 
     public synchronized String handleClientTileRequest(String message) {
-        if (DataPacketHandler.handlePacket(message)[DataPacketHandler.SUBPACKET_PACKETTYPE] == DataPacketHandler.PACKETTYPE_LEAVEGAME){
+        int[] decodedMessage = DataPacketHandler.handlePacket(message);
+        if (decodedMessage[DataPacketHandler.SUBPACKET_PACKETTYPE] == DataPacketHandler.PACKETTYPE_LEAVEGAME){
             return "QUIT";
         }
         else {
-            System.out.println("MEDIPROTOCOL: Client " + activeClient + " requested a tile");
-            Tile t = mapHandler.drawLand(0);
+            int stackNumber = decodedMessage[DataPacketHandler.SUBPACKET_STACKNUMBER];
+            System.out.println("MEDIPROTOCOL: Client " + activeClient + " requested a tile from stack " + stackNumber);
+            Tile t = mapHandler.drawLand(stackNumber);
+            this.message = DataPacketHandler.createTileDrawnPackage(stackNumber);
+            notifyAll();
             return DataPacketHandler.createTileDeliveryPackage(t.getType());
         }
     }
