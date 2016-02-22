@@ -26,7 +26,7 @@ public class ClientPlayer {
         playerName = name;
     }
     
-    public void messagePlager(String s) {
+    public void messagePlayer(String s) {
         uI.newMessage(s);
     }
     

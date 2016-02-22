@@ -258,6 +258,9 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
             case KeyEvent.VK_Q:
                 mPL.clientDisconnect();
                 break;
+            case KeyEvent.VK_D:
+                mPL.chatMessage("MESSAGE: DAVID Hej oooo AUAUUA!");
+                System.out.println("MESSAGE SENT");
         }
     }
 

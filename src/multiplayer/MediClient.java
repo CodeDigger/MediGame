@@ -43,11 +43,11 @@ public class MediClient implements ServerMessageListener, MapPanelListener {
         mapPanel.setPlayer(player);
         mapPanel.setUI(player.getUI());
         
-        player.messagePlager("Meddelande 1");
-        player.messagePlager("Meddelande 2");
-        player.messagePlager("Meddelande 3");
-        player.messagePlager("Meddelande 4");
-        player.messagePlager("Meddelande 5");
+        player.messagePlayer("Meddelande 1");
+        player.messagePlayer("Meddelande 2");
+        player.messagePlayer("Meddelande 3");
+        player.messagePlayer("Meddelande 4");
+        player.messagePlayer("Meddelande 5");
         
         
         mapPanel.runGame();
@@ -90,6 +90,8 @@ public class MediClient implements ServerMessageListener, MapPanelListener {
                 Tile tileToPlay = TileHandler.initLand(packet[DataPacketHandler.SUBPACKET_TILETYPETOPLAY]); //Create a tile from tile data
                 player.giveTile(tileToPlay);
                 break;
+            case DataPacketHandler.PACKETTYPE_CHATMESSAGE:
+                player.messagePlayer(DataPacketHandler.getTextMessage(serverMessage));
             default:
                 break;
         }
@@ -108,7 +110,7 @@ public class MediClient implements ServerMessageListener, MapPanelListener {
 
     @Override
     public void chatMessage(String s) {
-        //TODO Implement Chat
+        outServer.println(DataPacketHandler.createChatMessage(s));
     }
 
     @Override

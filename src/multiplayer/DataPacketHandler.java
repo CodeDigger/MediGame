@@ -14,6 +14,7 @@ public class DataPacketHandler {
     public static final int PACKETTYPE_LEAVEGAME = 4;
     public static final int PACKETTYPE_TILEDRAWN = 5;
     public static final int PACKETTYPE_SERVERMESSAGE = 6;
+    public static final int PACKETTYPE_CHATMESSAGE = 7;
 
     public static final int STATUS_WAIT = 0;
     public static final int STATUS_PLAY = 1;
@@ -26,6 +27,7 @@ public class DataPacketHandler {
     public static final int SUBPACKET_TILETOPLACE_TYPE = 3;
     public static final int SUBPACKET_TILETOPLACE_ALIGNMENT = 4;
     public static final int SUBPACKET_STACKNUMBER = 1;
+    
 
 
     public static String createTilePlacementPackage(int row, int col, int tileType, int tileAlignment){
@@ -54,6 +56,10 @@ public class DataPacketHandler {
 
     public static String createServerMessage(String message){
         return (PACKETTYPE_SERVERMESSAGE + ":" + message);
+    }
+    
+    public static String createChatMessage(String message) {
+        return (PACKETTYPE_CHATMESSAGE + ":"+message);
     }
 
     public static int[] handlePacket(String packet){
@@ -97,6 +103,9 @@ public class DataPacketHandler {
             case PACKETTYPE_SERVERMESSAGE:
                 returnInt = new int[]{PACKETTYPE_SERVERMESSAGE};
                 break;
+            case PACKETTYPE_CHATMESSAGE:
+                returnInt = new int[]{PACKETTYPE_CHATMESSAGE};
+                break;
             default:
                 returnInt = new int[]{0,0};
                 break;
@@ -104,7 +113,7 @@ public class DataPacketHandler {
         return returnInt;
     }
 
-    public String getServerMessage(String message){
+    public static String getTextMessage(String message){
         return message.substring(2, message.length());
     }
 
