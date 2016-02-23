@@ -23,13 +23,16 @@ public class TileHandler {
     public static final int G4 = 10;
     public static final int R2A = 14;
     public static final int C1 = 20;
-    public static final int C1R2B = 24;
+    public static final int C1R2C = 24;
     public static final int C2A = 30;
+    public static final int C2R2B = 32;
     public static final int C1R2A = 34;
     public static final int C2B = 40;
+    public static final int C1R2D = 44;
     public static final int C2C = 50;
+    public static final int R2B = 54;
     public static final int C3A = 60;
-    public static final int DIFFERENT_TYPES = 9;
+    public static final int DIFFERENT_TYPES = 12;
 
     public TileHandler(int tileSprites) {
         tileTextures = ImageHandler.loadImage("/resources/textures/Tiles-03.png");;
@@ -45,16 +48,22 @@ public class TileHandler {
             toBePlaced = new R2A();
         } else if (newTileType == TileHandler.C1) {
             toBePlaced = new C1();
-        } else if (newTileType == TileHandler.C1R2B) {
-            toBePlaced = new C1R2B();
+        } else if (newTileType == TileHandler.C1R2C) {
+            toBePlaced = new C1R2C();
         } else if (newTileType == TileHandler.C2A) {
             toBePlaced = new C2A();
+        } else if (newTileType == TileHandler.C2R2B) {
+            toBePlaced = new C2R2B();
         } else if (newTileType == TileHandler.C1R2A) {
             toBePlaced = new C1R2A();
         } else if (newTileType == TileHandler.C2B) {
             toBePlaced = new C2B();
+        } else if (newTileType == TileHandler.C1R2D) {
+            toBePlaced = new C1R2D();
         } else if (newTileType == TileHandler.C2C) {
             toBePlaced = new C2C();
+        } else if (newTileType == TileHandler.R2B) {
+            toBePlaced = new R2B();
         } else if (newTileType == TileHandler.C3A) {
             toBePlaced = new C3A();
         } else {

@@ -19,6 +19,7 @@ public class C1 extends Tile {
     
     public C1(int row, int col, Image img) {
 	super(row, col, img);
+        initContent();
     }
     
     private void initContent() {

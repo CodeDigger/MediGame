@@ -19,6 +19,7 @@ public class Grass extends Tile {
     
     public Grass(int row, int col, Image img) {
 	super(row, col, img);
+        initContent();
     }
     
     private void initContent() {

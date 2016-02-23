@@ -82,15 +82,21 @@ public class TmMapHandler {
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C1;
         } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C1R2B;
+            newTileType = TileHandler.C1R2C;
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C2A;
+        } else if (d > (div * i++) && d <= (div * i)) {
+            newTileType = TileHandler.C2R2B;
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C1R2A;
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C2B;
         } else if (d > (div * i++) && d <= (div * i)) {
+            newTileType = TileHandler.C1R2D;
+        } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C2C;
+        } else if (d > (div * i++) && d <= (div * i)) {
+            newTileType = TileHandler.R2B;
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C3A;
         }
@@ -104,37 +110,39 @@ public class TmMapHandler {
     }
 
     Tile initLand(int newTileType) {
-        Tile toBePlaced;
-        
-        if (newTileType == TileHandler.G4) {
-            toBePlaced = new Grass();
-        } else if (newTileType == TileHandler.R2A) {
-            toBePlaced = new R2A();
-        } else if (newTileType == TileHandler.C1) {
-            toBePlaced = new C1();
-        } else if (newTileType == TileHandler.C1R2B) {
-            toBePlaced = new C1R2B();
-        } else if (newTileType == TileHandler.C2A) {
-            toBePlaced = new C2A();
-        } else if (newTileType == TileHandler.C1R2A) {
-            toBePlaced = new C1R2A();
-        } else if (newTileType == TileHandler.C2B) {
-            toBePlaced = new C2B();
-        } else if (newTileType == TileHandler.C2C) {
-            toBePlaced = new C2C();
-        } else if (newTileType == TileHandler.C3A) {
-            toBePlaced = new C3A();
-        } else {
-            toBePlaced = null;
-            System.out.println("- [ERROR] -: Tile initiation failed!");
-        }
-        int all = toBePlaced.getMaxAlignments();
-        Image[] images = new Image[all];
-        for (int i = 0; i < all; i++) {
-            images[i] = tH.getImage(newTileType+i);
-        }
-        toBePlaced.setAllImages(images);
-        return toBePlaced;
+        Tile t = TileHandler.initLand(newTileType);
+        return t;
+//        Tile toBePlaced;
+//        
+//        if (newTileType == TileHandler.G4) {
+//            toBePlaced = new Grass();
+//        } else if (newTileType == TileHandler.R2A) {
+//            toBePlaced = new R2A();
+//        } else if (newTileType == TileHandler.C1) {
+//            toBePlaced = new C1();
+//        } else if (newTileType == TileHandler.C1R2B) {
+//            toBePlaced = new C1R2C();
+//        } else if (newTileType == TileHandler.C2A) {
+//            toBePlaced = new C2A();
+//        } else if (newTileType == TileHandler.C1R2A) {
+//            toBePlaced = new C1R2A();
+//        } else if (newTileType == TileHandler.C2B) {
+//            toBePlaced = new C2B();
+//        } else if (newTileType == TileHandler.C2C) {
+//            toBePlaced = new C2C();
+//        } else if (newTileType == TileHandler.C3A) {
+//            toBePlaced = new C3A();
+//        } else {
+//            toBePlaced = null;
+//            System.out.println("- [ERROR] -: Tile initiation failed!");
+//        }
+//        int all = toBePlaced.getMaxAlignments();
+//        Image[] images = new Image[all];
+//        for (int i = 0; i < all; i++) {
+//            images[i] = tH.getImage(newTileType+i);
+//        }
+//        toBePlaced.setAllImages(images);
+//        return toBePlaced;
     }
     
     boolean playerPlaceLand(TmPlayer p, int row, int col) {

@@ -79,15 +79,21 @@ public class ServerMapHandler {
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C1;
         } else if (d > (div * i++) && d <= (div * i)) {
-            newTileType = TileHandler.C1R2B;
+            newTileType = TileHandler.C1R2C;
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C2A;
+        } else if (d > (div * i++) && d <= (div * i)) {
+            newTileType = TileHandler.C2R2B;
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C1R2A;
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C2B;
         } else if (d > (div * i++) && d <= (div * i)) {
+            newTileType = TileHandler.C1R2D;
+        } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C2C;
+        } else if (d > (div * i++) && d <= (div * i)) {
+            newTileType = TileHandler.R2B;
         } else if (d > (div * i++) && d <= (div * i)) {
             newTileType = TileHandler.C3A;
         }

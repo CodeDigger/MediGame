@@ -3,27 +3,28 @@ package tiles;
 
 import java.awt.Image;
 
-public class R2A extends Tile {
+public class C2R2B extends Tile {
     
-    public R2A() {
+    public C2R2B() {
         super();
         maxAlignments = 2;
-        type = TileHandler.R2A;
+        type = TileHandler.C2R2B;
         initContent();
     }
     
-    public R2A (Image img) {
+    public C2R2B (Image img) {
         super(img);
         initContent();
     }
     
-    public R2A(int row, int col, Image img) {
+    public C2R2B(int row, int col, Image img) {
 	super(row, col, img);
         initContent();
     }
     
     private void initContent() {
-        char[] c = new char[]{'O','R','O','O','O','R','O','O','O'};
+//                                 ^       >       v       <
+        char[] c = new char[]{'O','R','O','C','O','R','O','C','O'};
         setContent(c);
     }
     

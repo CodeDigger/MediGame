@@ -18,6 +18,7 @@ public class C2B extends Tile {
     
     public C2B(int row, int col, Image img) {
 	super(row, col, img);
+        initContent();
     }
     
     private void initContent() {
