@@ -2,38 +2,25 @@ package multiplayer;
 
 import java.net.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * The server
  * Created by Tobias on 2015-07-30.
  */
-public class MediServer extends Thread {
-
-    /**
-     * The names of the clients.
-     */
-    private static HashSet<String> names = new HashSet<>();
-
-    /**
-     * The print writers for all the clients.
-     */
-    private static HashSet<PrintWriter> writers = new HashSet<>();
+public class Server extends Thread {
 
     int portNumber;
     int numClients;
     boolean listening = true;
-    MediProtocol mediProtocol;
+    ServerProtocol serverProtocol;
     int clientIndex;
-    ArrayList<MediServerThread> threadList = new ArrayList();
-    
-    public MediServer(int portNumber, int numClients) {
-        super("MediServer");
+
+    public Server(int portNumber, int numClients) {
+        super("Server");
         this.portNumber = portNumber;
         this.numClients = numClients;
         clientIndex = 0;
-        mediProtocol = new MediProtocol();
+        serverProtocol = new ServerProtocol();
     }
     
     public void run() {
@@ -42,10 +29,14 @@ public class MediServer extends Thread {
             ServerSocket serverSocket = new ServerSocket(portNumber);
             System.out.println("SERVER: The server is running on port: " + portNumber);
             while (listening) {
-                new MediServerThread(serverSocket.accept(), mediProtocol, clientIndex++).start();
-                mediProtocol.newClientConnected();
+                Socket socket = serverSocket.accept();
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                serverProtocol.newClientConnected(out);
+                new ServerMessageReceiverThread(in, serverProtocol, clientIndex++).start();
                 System.out.println("SERVER: Client connected! The number of clients is: " + clientIndex);
                 System.out.println("***********************************");
+                serverProtocol.nextActiveClient();
             }
         }
         catch (IOException e) {

@@ -1,7 +1,7 @@
 package multiplayer;
 
 import events.MapPanelListener;
-import events.ServerMessageListener;
+import events.MessageListener;
 import java.io.BufferedReader;
 import mapBuilder.ClientPlayer;
 import mapBuilder.ClientMapHandler;
@@ -18,10 +18,7 @@ import java.net.Socket;
  * Created by Tobias on 2015-07-30.
  * Medi client class
  */
-public class MediClient implements ServerMessageListener, MapPanelListener {
-
-    private static final int WAIT = 0;
-    private static final int PLAY = 1;
+public class Client implements MessageListener, MapPanelListener {
 
     String hostName;
     int portNumber;
@@ -30,10 +27,9 @@ public class MediClient implements ServerMessageListener, MapPanelListener {
 
     ClientPlayer player;
     PrintWriter outServer;
-    BufferedReader inServer;
 
 
-    public MediClient(String ip, int port, ClientMapPanel mapPanel) {
+    public Client(String ip, int port, ClientMapPanel mapPanel) {
         hostName = ip;
         portNumber = port;
         this.mapPanel = mapPanel;
@@ -62,12 +58,12 @@ public class MediClient implements ServerMessageListener, MapPanelListener {
         
         outServer = out;
         
-        new MessageReciever(in, this).start();
+        new MessageReceiverThread(in, this).start();
         
     }
 
     @Override
-    public void serverMessage(String serverMessage) {
+    public void receivedMessage(String serverMessage) {
         System.out.println("CLIENT - From server: " + serverMessage);
 
         int[] packet = DataPacketHandler.handlePacket(serverMessage);

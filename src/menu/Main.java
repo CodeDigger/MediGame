@@ -1,6 +1,6 @@
 package menu;
 
-import multiplayer.MediClient;
+import multiplayer.Client;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import mapBuilder.ClientMapPanel;
-import multiplayer.MediServer;
+import multiplayer.Server;
 import testMode.TmMapPanel;
 import testMode.TmMenuBar;
 
@@ -28,9 +28,9 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     TmMapPanel tmMapPanel;
 
     //MULTIPLAYER
-    MediServer server;
+    Server server;
     ClientMapPanel clientMapPanel;
-    MediClient mediClient;
+    Client client;
 
     Dimension mapDim;
     Dimension menuDim;
@@ -91,8 +91,8 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         
         
         try {
-            mediClient = new MediClient(ip, port, clientMapPanel);
-            mediClient.initServerConnection();
+            client = new Client(ip, port, clientMapPanel);
+            client.initServerConnection();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -158,7 +158,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             setUpTMGame();
             startTMGame();
         } else if (e.getActionCommand().equals(MainMenu.START_SERVER)) {
-            server = new MediServer(4444, 2);
+            server = new Server(4444, 2);
             System.out.println("- CREATING SERVER:");
             server.start();
         } else if (e.getActionCommand().equals(MainMenu.JOIN_SERVER)) {

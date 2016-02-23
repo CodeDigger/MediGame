@@ -1,7 +1,7 @@
 
 package mapBuilder;
 
-import events.ServerMessageListener;
+import events.MessageListener;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,7 +12,7 @@ import java.awt.image.ImageObserver;
 import java.util.Calendar;
 
 
-public class UserInterface extends Canvas implements ServerMessageListener {
+public class UserInterface extends Canvas implements MessageListener {
 
     public Image[] tileImages;
     int currentImg;
@@ -96,7 +96,7 @@ public class UserInterface extends Canvas implements ServerMessageListener {
     }
 
     @Override
-    public void serverMessage(String s) {
+    public void receivedMessage(String s) {
         newMessage(s);
     }
 
