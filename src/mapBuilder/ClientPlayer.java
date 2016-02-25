@@ -74,4 +74,8 @@ public class ClientPlayer {
     public boolean hasLeftGame(){
         return hasLeftGame;
     }
+    
+    public String getName() {
+        return playerName;
+    }
 }

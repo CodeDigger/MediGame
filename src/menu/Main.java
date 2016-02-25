@@ -87,7 +87,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         String ip = connectWindow.getIP();
         int port = connectWindow.getPort();
         System.out.println("CLIENT: Connecting to server: " + ip + ":" + port);
-        clientMapPanel = new ClientMapPanel();
+        clientMapPanel = new ClientMapPanel(this);
         
         
         try {

@@ -77,7 +77,9 @@ public class ServerProtocol implements ServerMessageListener {
                 //TODO handle this
                 break;
             case DataPacketHandler.PACKETTYPE_CHATMESSAGE:
-                //TODO handle this too
+                String s = DataPacketHandler.getTextMessage(message);
+                System.out.println("Client Message: "+s);
+                notifyAllClients(message);
                 break;
             default:
                 break;
@@ -91,6 +93,13 @@ public class ServerProtocol implements ServerMessageListener {
             }
         });
     }
+    
+    private void notifyAllClients(String message) {
+        outList.forEach(out -> {
+            out.println(message);
+        });
+    }
+    
 
     private void notifyActiveClient(String message) {
         outList.get(activeClient).println(message);
