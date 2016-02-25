@@ -12,49 +12,18 @@ import java.util.ArrayList;
  */
 public class ServerProtocol implements ServerMessageListener {
 
-    int connectedClients = 0;
+    //int connectedClients = 0;
     ArrayList<PrintWriter> outList;
+
+    ArrayList<ClientInfo> connectedClients;
 
     private int activeClient = 0;
     ServerMapHandler mapHandler;
 
-    private String message;
-
     public ServerProtocol() {
         mapHandler = new ServerMapHandler();
         outList = new ArrayList<>();
-    }
-
-    public synchronized String handleClientTilePlacement(String message) {
-        String returnString;
-        if (DataPacketHandler.handlePacket(message)[DataPacketHandler.SUBPACKET_PACKETTYPE] == DataPacketHandler.PACKETTYPE_LEAVEGAME){
-            returnString = "QUIT";
-        }
-        else {
-            returnString = "PLAYING";
-        }
-        this.message = message;
-        System.out.println("MEDIPROTOCOL: Client " + activeClient + " placed: " + message);
-
-        nextActiveClient();
-        notifyAll();
-        return returnString;
-
-    }
-
-    public synchronized String handleClientTileRequest(String message) {
-        int[] decodedMessage = DataPacketHandler.handlePacket(message);
-        if (decodedMessage[DataPacketHandler.SUBPACKET_PACKETTYPE] == DataPacketHandler.PACKETTYPE_LEAVEGAME){
-            return "QUIT";
-        }
-        else {
-            int stackNumber = decodedMessage[DataPacketHandler.SUBPACKET_STACKNUMBER];
-            System.out.println("MEDIPROTOCOL: Client " + activeClient + " requested a tile from stack " + stackNumber);
-            Tile t = mapHandler.drawLand(stackNumber);
-            this.message = DataPacketHandler.createTileDrawnPackage(stackNumber);
-            notifyAll();
-            return DataPacketHandler.createTileDeliveryPackage(t.getType());
-        }
+        connectedClients = new ArrayList<>();
     }
 
     @Override
@@ -79,11 +48,32 @@ public class ServerProtocol implements ServerMessageListener {
             case DataPacketHandler.PACKETTYPE_CHATMESSAGE:
                 String s = DataPacketHandler.getTextMessage(message);
                 System.out.println("Client Message: "+s);
-                notifyAllClients(message);
+                notifyAllClients(message); //Just forward the same message that client sent to all clients
                 break;
+            case DataPacketHandler.PACKETTYPE_STARTTURN: //The client are ready to start play
+                notifyAllClients(DataPacketHandler.createServerMessage("Player " + clientIndex + " is ready!"));
+                connectedClients.get(getListIndexByClientIndex(clientIndex)).ready2Play = true;
+                if (allPlayersReady2Play()){
+                    startGame();
+                }
             default:
                 break;
         }
+    }
+
+    private void startGame() {
+        notifyAllClients(DataPacketHandler.createStartGamePackage());
+        notifyActiveClient(DataPacketHandler.createStartTurnPackage());
+    }
+
+    private boolean allPlayersReady2Play() {
+
+        for (ClientInfo clientInfo: connectedClients){
+            if (!clientInfo.ready2Play){
+                return false;
+            }
+        }
+        return true;
     }
 
     private void notifyInactiveClients(String message) {
@@ -95,9 +85,7 @@ public class ServerProtocol implements ServerMessageListener {
     }
     
     private void notifyAllClients(String message) {
-        outList.forEach(out -> {
-            out.println(message);
-        });
+        outList.forEach(out -> out.println(message));
     }
     
 
@@ -107,20 +95,45 @@ public class ServerProtocol implements ServerMessageListener {
 
     public void nextActiveClient() {
         activeClient++;
-        if (activeClient >= connectedClients) {
+        if (activeClient > connectedClients.size()-1) {
             activeClient = 0;
         }
-        notifyActiveClient(DataPacketHandler.createStatusUpdatePackage(DataPacketHandler.STATUS_PLAY));
     }
 
-    public void newClientConnected(PrintWriter out) {
-        connectedClients++;
+    public void newClientConnected(PrintWriter out, int clientIndex) {
+        //connectedClients++;
+        notifyAllClients(DataPacketHandler.createServerMessage("Player " + clientIndex + " connected!"));
+        connectedClients.add(new ClientInfo(clientIndex, false, true));
         outList.add(out);
         System.out.println("MEDIPROTOCOL: " + connectedClients + " connected");
     }
 
-    public void clientDisconnected() {
-        connectedClients--;
+    public void clientDisconnected(int clientIndex) {
+        //connectedClients--;
+        //TODO fix this in some smart way
         System.out.println("MEDIPROTOCOL: " + connectedClients + " connected");
+    }
+
+    private int getListIndexByClientIndex(int clientIndex) {
+        int listIndex = -1;
+        for (int i = 0; i < connectedClients.size(); i++) {
+            if(connectedClients.get(i).clientIndex == clientIndex){
+                listIndex = i;
+            }
+        }
+        return listIndex;
+    }
+
+    private class ClientInfo {
+        int clientIndex;
+        boolean ready2Play;
+        boolean connected;
+        //TODO add ip;
+
+        public ClientInfo(int clientIndex, boolean ready2Play, boolean connected) {
+            this.clientIndex = clientIndex;
+            this.ready2Play = ready2Play;
+            this.connected = connected;
+        }
     }
 }

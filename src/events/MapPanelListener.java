@@ -15,5 +15,5 @@ public interface MapPanelListener {
     void tilePlaced(int row, int col, int tileType, int alignment);
     void chatMessage(String s);
     void clientDisconnect();
-    
+    void ready();
 }

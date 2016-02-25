@@ -32,7 +32,7 @@ public class Server extends Thread {
                 Socket socket = serverSocket.accept();
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                serverProtocol.newClientConnected(out);
+                serverProtocol.newClientConnected(out, clientIndex);
                 new ServerMessageReceiverThread(in, serverProtocol, clientIndex++).start();
                 System.out.println("SERVER: Client connected! The number of clients is: " + clientIndex);
                 System.out.println("***********************************");

@@ -21,6 +21,7 @@ public class ConnectWindow extends JFrame {
     
     JTextField ipTextField;
     JTextField portTextField;
+    JTextField playerNameTextField;
     JButton connectButton;
     
     public ConnectWindow (Main main) {
@@ -28,10 +29,12 @@ public class ConnectWindow extends JFrame {
         setLayout(new FlowLayout(FlowLayout.CENTER));
         ipTextField = new JTextField("192.168.1.92",10);
         portTextField = new JTextField("4444", 4);
+        playerNameTextField = new JTextField("Enter Name", 10);
         connectButton = new JButton("Connect");
         connectButton.addActionListener(main);
         add(ipTextField);
         add(portTextField);
+        add(playerNameTextField);
         add(connectButton);
         
         pack();
@@ -50,8 +53,11 @@ public class ConnectWindow extends JFrame {
     }
     
     public int getPort() {
-        int p = Integer.parseInt(portTextField.getText());
-        return p;
+        return Integer.parseInt(portTextField.getText());
+    }
+
+    public String getPlayerName(){
+        return playerNameTextField.getText();
     }
     
 }

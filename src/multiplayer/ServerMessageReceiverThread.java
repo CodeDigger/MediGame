@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 /**
+ * This is a thread that listens to a client. A new thread is created for each client that connects
  * Created by Tobias on 2016-02-23.
  */
 public class ServerMessageReceiverThread extends Thread {

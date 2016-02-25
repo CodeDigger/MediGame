@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JFrame;
+import javax.swing.*;
+
 import mapBuilder.ClientMapPanel;
 import multiplayer.Server;
 import testMode.TmMapPanel;
@@ -50,7 +51,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         setLocationRelativeTo(null);
 
         addComponentListener(this);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
 
@@ -86,12 +87,13 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         System.out.println(" - - -  PREPARING TO JOIN  - - - ");
         String ip = connectWindow.getIP();
         int port = connectWindow.getPort();
+        String playerName = connectWindow.getPlayerName();
         System.out.println("CLIENT: Connecting to server: " + ip + ":" + port);
         clientMapPanel = new ClientMapPanel(this);
         
         
         try {
-            client = new Client(ip, port, clientMapPanel);
+            client = new Client(ip, port, playerName, clientMapPanel);
             client.initServerConnection();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,7 +103,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         System.out.println(" - - -  _________________  - - -");
     }
 
-    private void startMultiplayerGame() {
+    public void startMultiplayerGame() {
         if (multiplayerGameRunning) {
             connectWindow.dispose();
             remove(mainMenu);
@@ -113,7 +115,6 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             frameHeight = getHeight() - clientMapPanel.getHeight();
             frameWidth = getWidth() - clientMapPanel.getWidth();
             componentResized(null);
-            clientMapPanel.waitForStart();
         } else {
             System.out.println("- [ERROR] -: Unable to start game. Game not set up!");
         }
@@ -165,7 +166,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             connectWindow = new ConnectWindow(this);
         } else if (e.getSource() == connectWindow.getConnectButton()) {
             setUpMultiplayerGame();
-            startMultiplayerGame();
+            //startMultiplayerGame();
         }
 
     }

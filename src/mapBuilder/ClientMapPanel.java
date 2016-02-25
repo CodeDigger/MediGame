@@ -1,22 +1,16 @@
 package mapBuilder;
 
 import events.MapPanelListener;
+import menu.Main;
 import tiles.TileStack;
 import events.MenubarListener;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Panel;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.VolatileImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import tiles.Tile;
 import utilities.AudioHandler;
@@ -26,7 +20,8 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     private final static int initWidth = 1200;
     private final static int initHeight = 700;
     private Dimension panelDim;
-    private JFrame mainFrame;
+    private Main mainFrame;
+    JFrame lobbyFrame;
 
     private ClientMapHandler mapHandler;
 
@@ -42,12 +37,10 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     MapPanelListener mPL;
 
     UserInterface uI;
-    boolean waitingForStart = true;
     private boolean tileRequestMode = true;
     private boolean playing = false;
-    private int requestedTileStackNumber;
 
-    public ClientMapPanel(JFrame window) {
+    public ClientMapPanel(Main window) {
         this.mainFrame = window;
         panelDim = new Dimension(initWidth, initHeight);
         setPreferredSize(panelDim);
@@ -58,7 +51,6 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         addKeyListener(this);
 
         audioHandler = new AudioHandler();
-        audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");
     }
 
     public void setPlayer(ClientPlayer p) {
@@ -84,16 +76,6 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         g.drawImage(mapImage, mapX, mapY, this);
     }
 
-    public void waitForStart() {
-        while (waitingForStart) {
-            //Do nothing
-        }
-    }
-
-    public void runGame() {
-        waitingForStart = false;
-    }
-
     @Override
     public void paint(Graphics g) {
         long p0 = System.currentTimeMillis();
@@ -110,7 +92,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         g.drawString(" Update Time: " + updateTime + " ms", 10, 48);
         g.drawString(" FPS: " + fps, 10, 64);
     }
-    
+
     @Override
     public void update(Graphics g) {
         if (updateImage == null) {
@@ -252,7 +234,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     boolean chatting = false;
     JFrame jFrame;
     JTextField textField;
-    
+
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
@@ -280,16 +262,16 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
                     textField.requestFocus();
                     textField.addKeyListener(this);
                     chatting = true;
-                } else if (chatting && textField.getText().equals("")) {
+                } else if (textField.getText().equals("")) {
                     chatting = false;
                     jFrame.dispose();
-                } else if (chatting) {
+                } else {
                     mPL.chatMessage(player.getName()+": "+textField.getText());
                     chatting = false;
                     jFrame.dispose();
                 }
-                
-                
+
+
         }
     }
 
@@ -327,20 +309,35 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         return playing;
     }
 
-    public boolean getTileRequestMode() {
-        return tileRequestMode;
-    }
-
     public ClientMapHandler getMapHandler() {
         return mapHandler;
-    }
-
-    public int getRequestedTileStackNumber() {
-        return requestedTileStackNumber;
     }
 
     public void addMapPanelListener(MapPanelListener mPL) {
         this.mPL = mPL;
     }
 
+    public void startLobby() {
+        lobbyFrame = new JFrame("Lobby");
+        lobbyFrame.setLayout(new FlowLayout(FlowLayout.LEFT));
+        lobbyFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        JTextArea lobbyTextArea = new JTextArea(10, 24);
+        JButton readyButton = new JButton("READY");
+        lobbyTextArea.setEditable(false);
+        lobbyTextArea.append("Waiting...\n");
+        lobbyFrame.add(lobbyTextArea);
+        lobbyFrame.add(readyButton);
+        lobbyFrame.setAlwaysOnTop(true);
+        lobbyFrame.pack();
+        lobbyFrame.setLocationRelativeTo(mainFrame);
+        lobbyFrame.setVisible(true);
+
+        readyButton.addActionListener(e -> mPL.ready());
+    }
+
+    public void gameStartedByServer() {
+        lobbyFrame.dispose();
+        mainFrame.startMultiplayerGame();
+        audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");
+    }
 }
