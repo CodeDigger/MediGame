@@ -1,16 +1,19 @@
 package menu;
 
-import multiplayer.MediClient;
+import multiplayer.Client;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import mapBuilder.ClientMapPanel;
-import multiplayer.MediServer;
+import multiplayer.Server;
 import testMode.TmMapPanel;
 import testMode.TmMenuBar;
 
@@ -25,8 +28,9 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     TmMapPanel tmMapPanel;
 
     //MULTIPLAYER
-    MediServer server;
+    Server server;
     ClientMapPanel clientMapPanel;
+    Client client;
 
     Dimension mapDim;
     Dimension menuDim;
@@ -83,8 +87,16 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
         String ip = connectWindow.getIP();
         int port = connectWindow.getPort();
         System.out.println("CLIENT: Connecting to server: " + ip + ":" + port);
-        clientMapPanel = new ClientMapPanel();
-        new MediClient(ip, port, clientMapPanel).start();
+        clientMapPanel = new ClientMapPanel(this);
+        
+        
+        try {
+            client = new Client(ip, port, clientMapPanel);
+            client.initServerConnection();
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         multiplayerGameRunning = true;
         System.out.println(" - - -  _________________  - - -");
     }
@@ -146,7 +158,7 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             setUpTMGame();
             startTMGame();
         } else if (e.getActionCommand().equals(MainMenu.START_SERVER)) {
-            server = new MediServer(4444, 2);
+            server = new Server(4444, 2);
             System.out.println("- CREATING SERVER:");
             server.start();
         } else if (e.getActionCommand().equals(MainMenu.JOIN_SERVER)) {

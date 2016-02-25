@@ -29,7 +29,6 @@ public class ServerMapHandler {
     private int screenY = 0;
     
     public ServerMapHandler() {
-//        bgi = ImageHandler.loadImage("/resources/textures/wood_big.jpg");
         tH = new TileHandler(100);
         
         generateMap();
@@ -102,6 +101,7 @@ public class ServerMapHandler {
         tS.drawStack();
         if (tS.getStackCount() == 0) {
             map.deleteStack(tS);
+            //TODO Inform clients about stack deletion
         }
         return t;
     }
@@ -224,7 +224,7 @@ public class ServerMapHandler {
 
         //TO THE LEFT
         if (col - 1 >= 0) {
-            t = map.getTile(row, col);
+            t = map.getTile(row, col-1);
         }
         if (t == null) {
             //Do nothing

@@ -26,7 +26,7 @@ public class ClientPlayer {
         playerName = name;
     }
     
-    public void messagePlager(String s) {
+    public void messagePlayer(String s) {
         uI.newMessage(s);
     }
     
@@ -73,5 +73,9 @@ public class ClientPlayer {
 
     public boolean hasLeftGame(){
         return hasLeftGame;
+    }
+    
+    public String getName() {
+        return playerName;
     }
 }

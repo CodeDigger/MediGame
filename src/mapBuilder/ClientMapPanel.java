@@ -1,5 +1,6 @@
 package mapBuilder;
 
+import events.MapPanelListener;
 import tiles.TileStack;
 import events.MenubarListener;
 import java.awt.Color;
@@ -14,6 +15,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.VolatileImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
 
 import tiles.Tile;
 import utilities.AudioHandler;
@@ -23,6 +26,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     private final static int initWidth = 1200;
     private final static int initHeight = 700;
     private Dimension panelDim;
+    private JFrame mainFrame;
 
     private ClientMapHandler mapHandler;
 
@@ -35,6 +39,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     ClientPlayer player;
 
     AudioHandler audioHandler;
+    MapPanelListener mPL;
 
     UserInterface uI;
     boolean waitingForStart = true;
@@ -42,7 +47,8 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     private boolean playing = false;
     private int requestedTileStackNumber;
 
-    public ClientMapPanel() {
+    public ClientMapPanel(JFrame window) {
+        this.mainFrame = window;
         panelDim = new Dimension(initWidth, initHeight);
         setPreferredSize(panelDim);
         setBackground(Color.BLACK);
@@ -63,7 +69,6 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         this.uI = uI;
     }
 
-
     VolatileImage mapImage = null;
     VolatileImage updateImage = null;
     private long updateTime;
@@ -80,12 +85,12 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     }
 
     public void waitForStart() {
-        while(waitingForStart) {
+        while (waitingForStart) {
             //Do nothing
         }
     }
 
-    public void start() {
+    public void runGame() {
         waitingForStart = false;
     }
 
@@ -105,7 +110,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         g.drawString(" Update Time: " + updateTime + " ms", 10, 48);
         g.drawString(" FPS: " + fps, 10, 64);
     }
-
+    
     @Override
     public void update(Graphics g) {
         if (updateImage == null) {
@@ -162,21 +167,23 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
             pointX = mE.getX() - mapX;
             pointY = mE.getY() - mapY;
             TileStack tS = mapHandler.highlightStacks(pointX, pointY);
+
             if (tS != null && tileRequestMode) { //Tile request
-                requestedTileStackNumber = mapHandler.getTileStackNumber(tS);
                 tS.drawStack();
+                mPL.tileDrawn(mapHandler.getTileStackNumber(tS));
                 tileRequestMode = false;
-                System.out.println("CLIENT: Flagged for tile request");
                 repaint();
             } else { // Tile placement
-                Tile tile = mapHandler.getMouseTile(mE.getY(), mE.getX());
+                Tile mapCell = mapHandler.getMouseTile(mE.getY(), mE.getX());
+                Tile playerTile = player.checkTile();
+                if (mapCell != null && playing && playerTile != null) {
+                    int currentRow = mapCell.getRow();
+                    int currentCol = mapCell.getCol();
 
-                if (tile != null && playing && player.checkTile() != null) {
-                    int currentRow = tile.getRow();
-                    int currentCol = tile.getCol();
-
-                    if(mapHandler.playerPlaceLand(player.checkTile(), currentRow, currentCol)) {
+                    if (mapHandler.playerPlaceLand(playerTile, currentRow, currentCol)) {
+                        player.takeTile();
                         uI.setTileImages(null, 0);
+                        mPL.tilePlaced(playerTile.getRow(), playerTile.getCol(), playerTile.getType(), playerTile.getAlignment());
                         playing = false;
                         tileRequestMode = true;
                     }
@@ -195,9 +202,9 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     public void mouseMoved(MouseEvent mME) {
         mapHandler.updateHighlight(mME);
         //map.getHi(mME);
-        pointX = mME.getX()-mapX;
-        pointY = mME.getY()-mapY;
-        mapHandler.highlightStacks(pointX,pointY);
+        pointX = mME.getX() - mapX;
+        pointY = mME.getY() - mapY;
+        mapHandler.highlightStacks(pointX, pointY);
 
         repaint();
     }
@@ -242,6 +249,10 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         // Nothing
     }
 
+    boolean chatting = false;
+    JFrame jFrame;
+    JTextField textField;
+    
     @Override
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
@@ -252,8 +263,33 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
                 player.rotateTile();
                 break;
             case KeyEvent.VK_Q:
-                player.leaveGame();
+                mPL.clientDisconnect();
                 break;
+            case KeyEvent.VK_ENTER:
+                if (!chatting) {
+                    jFrame = new JFrame();
+                    textField = new JTextField(24);
+                    jFrame.add(textField);
+                    jFrame.setUndecorated(true);
+                    jFrame.setBackground(new Color(200,80,80));
+                    jFrame.setOpacity(0.6f);
+                    jFrame.setAlwaysOnTop(true);
+                    jFrame.pack();
+                    jFrame.setLocationRelativeTo(mainFrame);
+                    jFrame.setVisible(true);
+                    textField.requestFocus();
+                    textField.addKeyListener(this);
+                    chatting = true;
+                } else if (chatting && textField.getText().equals("")) {
+                    chatting = false;
+                    jFrame.dispose();
+                } else if (chatting) {
+                    mPL.chatMessage(player.getName()+": "+textField.getText());
+                    chatting = false;
+                    jFrame.dispose();
+                }
+                
+                
         }
     }
 
@@ -301,6 +337,10 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
 
     public int getRequestedTileStackNumber() {
         return requestedTileStackNumber;
+    }
+
+    public void addMapPanelListener(MapPanelListener mPL) {
+        this.mPL = mPL;
     }
 
 }

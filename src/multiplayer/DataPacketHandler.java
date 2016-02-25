@@ -7,13 +7,14 @@ package multiplayer;
  */
 public class DataPacketHandler {
 
-    public static final int PACKETTYPE_STATUSUPDATE = 0;
+    public static final int PACKETTYPE_STARTPLAY = 0;
     public static final int PACKETTYPE_TILEREQUEST = 1;
     public static final int PACKETTYPE_TILEDELIVERY = 2;
     public static final int PACKETTYPE_TILEPLACEMENT = 3;
     public static final int PACKETTYPE_LEAVEGAME = 4;
     public static final int PACKETTYPE_TILEDRAWN = 5;
     public static final int PACKETTYPE_SERVERMESSAGE = 6;
+    public static final int PACKETTYPE_CHATMESSAGE = 7;
 
     public static final int STATUS_WAIT = 0;
     public static final int STATUS_PLAY = 1;
@@ -26,6 +27,7 @@ public class DataPacketHandler {
     public static final int SUBPACKET_TILETOPLACE_TYPE = 3;
     public static final int SUBPACKET_TILETOPLACE_ALIGNMENT = 4;
     public static final int SUBPACKET_STACKNUMBER = 1;
+    
 
 
     public static String createTilePlacementPackage(int row, int col, int tileType, int tileAlignment){
@@ -37,7 +39,7 @@ public class DataPacketHandler {
     }
 
     public static String createStatusUpdatePackage(int status){
-        return (PACKETTYPE_STATUSUPDATE + ":" + status);
+        return (PACKETTYPE_STARTPLAY + ":" + status);
     }
 
     public static String createTileRequestPackage(int stackNumber){
@@ -55,12 +57,16 @@ public class DataPacketHandler {
     public static String createServerMessage(String message){
         return (PACKETTYPE_SERVERMESSAGE + ":" + message);
     }
+    
+    public static String createChatMessage(String message) {
+        return (PACKETTYPE_CHATMESSAGE + ":"+message);
+    }
 
     public static int[] handlePacket(String packet){
         int[] returnInt;
         switch (Character.getNumericValue(packet.charAt(0))) { //The first character in the packet is the package type
-            case PACKETTYPE_STATUSUPDATE:
-                returnInt = new int[]{PACKETTYPE_STATUSUPDATE, Character.getNumericValue(packet.charAt(2))};
+            case PACKETTYPE_STARTPLAY:
+                returnInt = new int[]{PACKETTYPE_STARTPLAY, Character.getNumericValue(packet.charAt(2))};
                 break;
             case PACKETTYPE_TILEREQUEST:
                 int stackNumber = Integer.parseInt(packet.substring(2, packet.length()));
@@ -97,6 +103,9 @@ public class DataPacketHandler {
             case PACKETTYPE_SERVERMESSAGE:
                 returnInt = new int[]{PACKETTYPE_SERVERMESSAGE};
                 break;
+            case PACKETTYPE_CHATMESSAGE:
+                returnInt = new int[]{PACKETTYPE_CHATMESSAGE};
+                break;
             default:
                 returnInt = new int[]{0,0};
                 break;
@@ -104,7 +113,7 @@ public class DataPacketHandler {
         return returnInt;
     }
 
-    public String getServerMessage(String message){
+    public static String getTextMessage(String message){
         return message.substring(2, message.length());
     }
 
