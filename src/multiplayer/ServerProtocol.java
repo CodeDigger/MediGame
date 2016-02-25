@@ -98,6 +98,7 @@ public class ServerProtocol implements ServerMessageListener {
         if (activeClient > connectedClients.size()-1) {
             activeClient = 0;
         }
+        notifyActiveClient(DataPacketHandler.createStartTurnPackage());
     }
 
     public void newClientConnected(PrintWriter out, int clientIndex) {
