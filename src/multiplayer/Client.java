@@ -100,7 +100,7 @@ public class Client implements MessageListener, MapPanelListener {
     }
 
     @Override
-    public void tileDrawn(int stackNumber) {
+    public void tileRequested(int stackNumber) {
         outServer.println(DataPacketHandler.createTileRequestPackage(stackNumber)); // Request tile from server:
     }
 

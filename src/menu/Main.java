@@ -159,14 +159,13 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             setUpTMGame();
             startTMGame();
         } else if (e.getActionCommand().equals(MainMenu.START_SERVER)) {
-            server = new Server(4444, 2);
+            server = new Server(4444, 2); //TODO fix number of clients
             System.out.println("- CREATING SERVER:");
             server.start();
         } else if (e.getActionCommand().equals(MainMenu.JOIN_SERVER)) {
             connectWindow = new ConnectWindow(this);
         } else if (e.getSource() == connectWindow.getConnectButton()) {
             setUpMultiplayerGame();
-            //startMultiplayerGame();
         }
 
     }
