@@ -39,12 +39,6 @@ public class Client implements MessageListener, MapPanelListener {
         player = new ClientPlayer(playerName, mapPanel.getSize());
         mapPanel.setPlayer(player);
         mapPanel.setUI(player.getUI());
-        
-        player.messagePlayer("Meddelande 1");
-        player.messagePlayer("Meddelande 2");
-        player.messagePlayer("Meddelande 3");
-        player.messagePlayer("Meddelande 4");
-        player.messagePlayer("Meddelande 5");
 
     }
 

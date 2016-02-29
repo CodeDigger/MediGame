@@ -36,7 +36,7 @@ public class DataPacketHandler {
     }
 
     public static String createPlayerReadyPackage(){
-        return String.valueOf(PACKETTYPE_PLAYERREADY);
+        return String.valueOf(PACKETTYPE_PLAYERREADY+":");
     }
 
     public static String createTileRequestPackage(int stackNumber){
@@ -44,7 +44,7 @@ public class DataPacketHandler {
     }
 
     public static String createLeaveGamePackage(){
-        return String.valueOf(PACKETTYPE_LEAVEGAME);
+        return String.valueOf(PACKETTYPE_LEAVEGAME+":");
     }
 
     public static String createTileDrawnPackage(int stackNumber){
@@ -60,7 +60,7 @@ public class DataPacketHandler {
     }
 
     public static String createStartGamePackage() {
-        return String.valueOf(PACKETTYPE_STARTGAME);
+        return String.valueOf(PACKETTYPE_STARTGAME+":");
     }
     
     public static String createPlayerTurnPackage(int playerIndex) {
@@ -71,16 +71,27 @@ public class DataPacketHandler {
 
     public static int[] handlePacket(String packet){
         int[] returnInt;
-        switch (Character.getNumericValue(packet.charAt(0))) { //The first character in the packet is the package type
+        int packetInt = 0;
+        int readFrom = 2;
+        
+        
+        if (packet.substring(1, 2).equals(":")) {
+            packetInt = Integer.parseInt(packet.substring(0, 1));
+        } else if (packet.substring(2, 3).equals(":")) {
+            packetInt = Integer.parseInt(packet.substring(0, 2));
+            readFrom = 3;
+        }
+        
+        switch (packetInt) { //The first character in the packet is the package type
             case PACKETTYPE_PLAYERREADY:
                 returnInt = new int[]{PACKETTYPE_PLAYERREADY};
                 break;
             case PACKETTYPE_TILEREQUEST:
-                int stackNumber = Integer.parseInt(packet.substring(2, packet.length()));
+                int stackNumber = Integer.parseInt(packet.substring(readFrom, packet.length()));
                 returnInt = new int[]{PACKETTYPE_TILEREQUEST, stackNumber};
                 break;
             case PACKETTYPE_TILEDELIVERY:
-                int tileDeliveryType = Integer.parseInt(packet.substring(2, packet.length()));
+                int tileDeliveryType = Integer.parseInt(packet.substring(readFrom, packet.length()));
                 returnInt = new int[]{PACKETTYPE_TILEDELIVERY, tileDeliveryType};
                 break;
             case PACKETTYPE_TILEPLACEMENT:
@@ -104,7 +115,7 @@ public class DataPacketHandler {
                 returnInt = new int[]{PACKETTYPE_LEAVEGAME};
                 break;
             case PACKETTYPE_TILEDRAWN:
-                int stackDrawnNumber = Integer.parseInt(packet.substring(2, packet.length()));
+                int stackDrawnNumber = Integer.parseInt(packet.substring(readFrom, packet.length()));
                 returnInt = new int[]{PACKETTYPE_TILEDRAWN, stackDrawnNumber};
                 break;
             case PACKETTYPE_SERVERMESSAGE:
@@ -117,7 +128,7 @@ public class DataPacketHandler {
                 returnInt = new int[]{PACKETTYPE_STARTGAME};
                 break;
             case PACKETTYPE_PLAYERSTURN:
-                int clientIndex = Integer.parseInt(packet.substring(2, packet.length()));
+                int clientIndex = Integer.parseInt(packet.substring(readFrom, packet.length()));
                 returnInt = new int[]{PACKETTYPE_PLAYERSTURN, clientIndex};
                 break;
             default:

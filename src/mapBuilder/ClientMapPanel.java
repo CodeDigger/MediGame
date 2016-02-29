@@ -246,7 +246,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
                     textField = new JTextField(24);
                     jFrame.add(textField);
                     jFrame.setUndecorated(true);
-                    jFrame.setBackground(new Color(200,80,80));
+                    jFrame.setBackground(Color.DARK_GRAY);
                     jFrame.setOpacity(0.6f);
                     jFrame.setAlwaysOnTop(true);
                     jFrame.pack();
