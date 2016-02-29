@@ -36,7 +36,6 @@ public class Server extends Thread {
                 serverProtocol.newClientConnected(out, clientIndex);
                 new ServerMessageReceiverThread(in, serverProtocol, clientIndex++).start();
                 System.out.println("SERVER: Client connected! The number of clients is: " + clientIndex);
-                System.out.println("***********************************");
             }
         }
         catch (IOException e) {

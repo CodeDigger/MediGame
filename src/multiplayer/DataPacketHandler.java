@@ -17,6 +17,7 @@ public class DataPacketHandler {
     public static final int PACKETTYPE_CHATMESSAGE = 7;
     public static final int PACKETTYPE_STARTGAME = 8;
     public static final int PACKETTYPE_PLAYERSTURN = 9;
+    public static final int PACKETTYPE_CLIENTINIT = 10;
 
     public static final int SUBPACKET_PACKETTYPE = 0;
     public static final int SUBPACKET_TILETYPETOPLAY = 1;
@@ -65,6 +66,10 @@ public class DataPacketHandler {
     
     public static String createPlayerTurnPackage(int playerIndex) {
         return (PACKETTYPE_PLAYERSTURN + ":" + playerIndex);
+    }
+    
+    public static String createClientInitPackage(String name) {
+        return (PACKETTYPE_CLIENTINIT+":"+name);
     }
 
 
@@ -131,6 +136,9 @@ public class DataPacketHandler {
                 int clientIndex = Integer.parseInt(packet.substring(readFrom, packet.length()));
                 returnInt = new int[]{PACKETTYPE_PLAYERSTURN, clientIndex};
                 break;
+            case PACKETTYPE_CLIENTINIT:
+                returnInt = new int[]{PACKETTYPE_CLIENTINIT};
+                break;
             default:
                 returnInt = new int[]{0,0};
                 System.out.println("DPH: [WARNING] Unidentified Packet");
@@ -140,7 +148,13 @@ public class DataPacketHandler {
     }
 
     public static String getTextMessage(String message){
-        return message.substring(2, message.length());
+        String s = null;
+        if (message.substring(1, 2).equals(":")) {
+            s = message.substring(2, message.length());
+        } else if (message.substring(2, 3).equals(":")) {
+            s = message.substring(3, message.length());
+        }
+        return s;
     }
 
 }

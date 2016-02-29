@@ -48,11 +48,9 @@ public class Client implements MessageListener, MapPanelListener {
         Socket socket = new Socket(hostName, portNumber);
         outServer = new PrintWriter(socket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        
         new MessageReceiverThread(in, this).start();
-
         mapPanel.startLobby();
-        
+        outServer.println(DataPacketHandler.createClientInitPackage(player.getName()));
     }
 
     @Override
@@ -96,7 +94,12 @@ public class Client implements MessageListener, MapPanelListener {
                 mapPanel.gameStartedByServer();
                 break;
             case DataPacketHandler.PACKETTYPE_SERVERMESSAGE:
-                //TODO fix this
+                if (player.getUI() != null) {
+                    player.messagePlayer(DataPacketHandler.getTextMessage(serverMessage));
+                }
+                if (mapPanel.getLobbyFrame() != null) {
+                    mapPanel.getLobbyFrame().writeMessage(DataPacketHandler.getTextMessage(serverMessage));
+                }
                 break;
             default:
                 break;

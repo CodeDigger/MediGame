@@ -11,6 +11,7 @@ import java.awt.image.VolatileImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import menu.LobbyFrame;
 
 import tiles.Tile;
 import utilities.AudioHandler;
@@ -21,7 +22,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     private final static int initHeight = 700;
     private Dimension panelDim;
     private Main mainFrame;
-    JFrame lobbyFrame;
+    LobbyFrame lobbyFrame;
 
     private ClientMapHandler mapHandler;
 
@@ -311,21 +312,10 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
     }
 
     public void startLobby() {
-        lobbyFrame = new JFrame("Lobby");
-        lobbyFrame.setLayout(new FlowLayout(FlowLayout.LEFT));
-        lobbyFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        JTextArea lobbyTextArea = new JTextArea(10, 24);
-        JButton readyButton = new JButton("READY");
-        lobbyTextArea.setEditable(false);
-        lobbyTextArea.append("Waiting...\n");
-        lobbyFrame.add(lobbyTextArea);
-        lobbyFrame.add(readyButton);
-        lobbyFrame.setAlwaysOnTop(true);
-        lobbyFrame.pack();
-        lobbyFrame.setLocationRelativeTo(mainFrame);
-        lobbyFrame.setVisible(true);
-
-        readyButton.addActionListener(e -> mPL.ready());
+        lobbyFrame = new LobbyFrame("Lobby", mainFrame);
+        lobbyFrame.getReadyButton().addActionListener(e -> mPL.ready());
+        
+//        readyButton.addActionListener(e -> mPL.ready());
     }
 
     public void gameStartedByServer() {
@@ -340,5 +330,9 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
         audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");
 
         mainFrame.startMultiplayerGame();
+    }
+
+    public LobbyFrame getLobbyFrame() {
+        return lobbyFrame;
     }
 }

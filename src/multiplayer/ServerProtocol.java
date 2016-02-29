@@ -51,11 +51,17 @@ public class ServerProtocol implements ServerMessageListener {
                 notifyAllClients(message); //Just forward the same message that client sent to all clients
                 break;
             case DataPacketHandler.PACKETTYPE_PLAYERREADY: //The client are ready to start play
-                notifyAllClients(DataPacketHandler.createServerMessage("Player " + clientIndex + " is ready!"));
+                notifyAllClients(DataPacketHandler.createServerMessage(connectedClients.get(clientIndex).getName()+ " is ready!"));
                 connectedClients.get(getListIndexByClientIndex(clientIndex)).ready2Play = true;
                 if (allPlayersReady2Play()){
                     startGame();
                 }
+                break;
+            case DataPacketHandler.PACKETTYPE_CLIENTINIT:
+                String name = DataPacketHandler.getTextMessage(message);
+                connectedClients.get(clientIndex).setName(name);
+                notifyAllClients(DataPacketHandler.createServerMessage(name+" connected!"));
+                break;
             default:
                 break;
         }
@@ -64,6 +70,7 @@ public class ServerProtocol implements ServerMessageListener {
     private void startGame() {
         notifyAllClients(DataPacketHandler.createStartGamePackage());
         notifyAllClients(DataPacketHandler.createPlayerTurnPackage(activeClient));
+        notifyAllClients(DataPacketHandler.createServerMessage("           |:|   LET THE CNARCASONNING BEGIN   |:|"));
     }
 
     private boolean allPlayersReady2Play() {
@@ -117,7 +124,6 @@ public class ServerProtocol implements ServerMessageListener {
         connectedClients.add(new ClientInfo(clientIndex, false, true));
         outList.add(out);
         notifyClientByIndex(DataPacketHandler.createPlayerTurnPackage(clientIndex), clientIndex);
-        notifyAllClients(DataPacketHandler.createServerMessage("Player " + clientIndex + " connected!"));
         System.out.println("MEDIPROTOCOL: " + connectedClients + " connected");
     }
 
@@ -141,6 +147,7 @@ public class ServerProtocol implements ServerMessageListener {
         int clientIndex;
         boolean ready2Play;
         boolean connected;
+        String name = "NoName";
         //TODO add ip;
 
         public ClientInfo(int clientIndex, boolean ready2Play, boolean connected) {
@@ -148,5 +155,15 @@ public class ServerProtocol implements ServerMessageListener {
             this.ready2Play = ready2Play;
             this.connected = connected;
         }
+        
+        public void setName(String name) {
+            this.name = name;
+            System.out.println("SERVER: Client name is: "+name);
+        }
+        
+        public String getName() {
+            return name;
+        }
+        
     }
 }
