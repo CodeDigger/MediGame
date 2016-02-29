@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package multiplayer;
+package multiplayerServer;
 
 import events.MessageListener;
 import java.io.BufferedReader;

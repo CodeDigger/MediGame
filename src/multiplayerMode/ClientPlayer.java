@@ -1,5 +1,5 @@
 
-package mapBuilder;
+package multiplayerMode;
 
 import java.awt.Dimension;
 import java.awt.Graphics;

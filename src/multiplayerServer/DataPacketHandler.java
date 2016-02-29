@@ -1,4 +1,4 @@
-package multiplayer;
+package multiplayerServer;
 
 /**
  * Created by Tobias on 2016-02-07.
@@ -26,7 +26,8 @@ public class DataPacketHandler {
     public static final int SUBPACKET_TILETOPLACE_TYPE = 3;
     public static final int SUBPACKET_TILETOPLACE_ALIGNMENT = 4;
     public static final int SUBPACKET_STACKNUMBER = 1;
-    public static final int SUBPACKET_PLAYERSTURN = 1;
+    public static final int SUBPACKET_PLAYERSTURN_INDEX = 1;
+    public static final int SUBPACKET_PLAYERSTURN_NAME = 2;
     
     public static String createTilePlacementPackage(int row, int col, int tileType, int tileAlignment){
         return (PACKETTYPE_TILEPLACEMENT + ":" + row + ":" + col + ":" + tileType + ":" + tileAlignment);
@@ -64,8 +65,8 @@ public class DataPacketHandler {
         return String.valueOf(PACKETTYPE_STARTGAME+":");
     }
     
-    public static String createPlayerTurnPackage(int playerIndex) {
-        return (PACKETTYPE_PLAYERSTURN + ":" + playerIndex);
+    public static String createPlayerTurnPackage(int playerIndex, String name) {
+        return (PACKETTYPE_PLAYERSTURN + ":" + playerIndex+":"+name);
     }
     
     public static String createClientInitPackage(String name) {
@@ -133,7 +134,7 @@ public class DataPacketHandler {
                 returnInt = new int[]{PACKETTYPE_STARTGAME};
                 break;
             case PACKETTYPE_PLAYERSTURN:
-                int clientIndex = Integer.parseInt(packet.substring(readFrom, packet.length()));
+                int clientIndex = Integer.parseInt(packet.substring(readFrom, readFrom+1));
                 returnInt = new int[]{PACKETTYPE_PLAYERSTURN, clientIndex};
                 break;
             case PACKETTYPE_CLIENTINIT:
@@ -156,5 +157,32 @@ public class DataPacketHandler {
         }
         return s;
     }
-
+    
+    /**
+     * HANDLE WITH CARE! This function is dangerous and should not be used without correct safety precautions.
+     * @param message
+     * @param subPacket
+     * @return 
+     */
+    public static String getSubMessage(String message, int subPacket){
+        // TODO Take care of unsafe function
+        int sub = 0;
+        int charA = 0;
+        int charB = message.length();
+        
+        for (int i = 0; i < message.length(); i++) {
+            if (message.charAt(i) == ':') {
+                sub++;
+                if (charA != 0) {
+                    charB = i;
+                    break;
+                }
+                if (sub == subPacket) {
+                    charA = i+1;
+                }
+            }
+        }
+        return message.substring(charA, charB);
+        
+    }
 }

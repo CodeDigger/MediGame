@@ -1,6 +1,5 @@
 package testMode;
 
-import mapBuilder.*;
 import events.MenubarListener;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

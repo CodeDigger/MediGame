@@ -1,6 +1,5 @@
 package testMode;
 
-import mapBuilder.*;
 import tiles.TileStack;
 import events.MenubarListener;
 import java.awt.Color;

@@ -1,4 +1,4 @@
-package multiplayer;
+package multiplayerServer;
 
 import events.ServerMessageListener;
 

@@ -1,7 +1,7 @@
-package multiplayer;
+package multiplayerServer;
 
 import events.ServerMessageListener;
-import mapBuilder.ServerMapHandler;
+import multiplayerMode.ServerMapHandler;
 import tiles.Tile;
 
 import java.io.PrintWriter;
@@ -69,7 +69,7 @@ public class ServerProtocol implements ServerMessageListener {
 
     private void startGame() {
         notifyAllClients(DataPacketHandler.createStartGamePackage());
-        notifyAllClients(DataPacketHandler.createPlayerTurnPackage(activeClient));
+        notifyAllClients(DataPacketHandler.createPlayerTurnPackage(activeClient, connectedClients.get(activeClient).getName()));
         notifyAllClients(DataPacketHandler.createServerMessage("           |:|   LET THE CNARCASONNING BEGIN   |:|"));
     }
 
@@ -117,13 +117,13 @@ public class ServerProtocol implements ServerMessageListener {
             activeClient = 0;
         }
 //        notifyActiveClient(DataPacketHandler.createStartTurnPackage());
-        notifyAllClients(DataPacketHandler.createPlayerTurnPackage(activeClient));
+        notifyAllClients(DataPacketHandler.createPlayerTurnPackage(activeClient, connectedClients.get(activeClient).getName()));
     }
 
     public void newClientConnected(PrintWriter out, int clientIndex) {
         connectedClients.add(new ClientInfo(clientIndex, false, true));
         outList.add(out);
-        notifyClientByIndex(DataPacketHandler.createPlayerTurnPackage(clientIndex), clientIndex);
+        notifyClientByIndex(DataPacketHandler.createPlayerTurnPackage(clientIndex,null), clientIndex);
         System.out.println("MEDIPROTOCOL: " + connectedClients + " connected");
     }
 

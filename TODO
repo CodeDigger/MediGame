@@ -3,5 +3,4 @@ FIXES: When active client draws a tile from stack it is immediately also drawn f
 TODO Fix disconnecting from server
 TODO Counting points on server
 TODO Distribution of tiles in the stacks should be fixed, and not random
-TODO Wait screen when connecting to server until all clients connected
 TODO Add meepos

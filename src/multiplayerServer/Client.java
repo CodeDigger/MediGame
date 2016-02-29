@@ -1,11 +1,11 @@
-package multiplayer;
+package multiplayerServer;
 
 import events.MapPanelListener;
 import events.MessageListener;
 import java.io.BufferedReader;
-import mapBuilder.ClientPlayer;
-import mapBuilder.ClientMapHandler;
-import mapBuilder.ClientMapPanel;
+import multiplayerMode.ClientPlayer;
+import multiplayerMode.ClientMapHandler;
+import multiplayerMode.ClientMapPanel;
 import tiles.Tile;
 import tiles.TileHandler;
 
@@ -60,7 +60,7 @@ public class Client implements MessageListener, MapPanelListener {
         int[] packet = DataPacketHandler.handlePacket(serverMessage);
         switch (packet[DataPacketHandler.SUBPACKET_PACKETTYPE]) {
             case DataPacketHandler.PACKETTYPE_PLAYERSTURN:
-                int playersTurn = packet[DataPacketHandler.SUBPACKET_PLAYERSTURN];
+                int playersTurn = packet[DataPacketHandler.SUBPACKET_PLAYERSTURN_INDEX];
                 if (clientIndex == -1) {
                     clientIndex = playersTurn;
                     System.out.println("CLIENT: You have "+clientIndex+" as Client Index! :) ");
@@ -69,7 +69,8 @@ public class Client implements MessageListener, MapPanelListener {
                     player.getUI().setTurn(true);
                 } else {
                     player.getUI().setTurn(false);
-                    //TODO Tell player who's playing
+                    String playingName = DataPacketHandler.getSubMessage(serverMessage, DataPacketHandler.SUBPACKET_PLAYERSTURN_NAME);
+                    player.getUI().setPlayingPlayersName(playingName);
                 }
                 break;
             case DataPacketHandler.PACKETTYPE_TILEPLACEMENT:

@@ -1,4 +1,4 @@
-package mapBuilder;
+package multiplayerMode;
 
 import events.MapPanelListener;
 import menu.Main;

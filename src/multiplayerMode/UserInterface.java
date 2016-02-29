@@ -1,5 +1,5 @@
 
-package mapBuilder;
+package multiplayerMode;
 
 import events.MessageListener;
 import java.awt.Canvas;
@@ -34,6 +34,7 @@ public class UserInterface extends Canvas implements MessageListener {
     
     // Turn UI variables
     int turnUIheight;
+    String playingPlayersName;
     boolean playersTurn;
     
     // Log UI variables
@@ -70,6 +71,14 @@ public class UserInterface extends Canvas implements MessageListener {
     
     public void setTurn(boolean playersTurn) {
         this.playersTurn = playersTurn;
+    }
+    
+    public void setPlayingPlayersName(String name) {
+        if (name.endsWith("s")) {
+            playingPlayersName = name+"'";
+        } else {
+            playingPlayersName = name+"'s";
+        }
     }
     
     @Override
@@ -113,7 +122,7 @@ public class UserInterface extends Canvas implements MessageListener {
             g.drawString("It's your turn!", spaceBorder+insideBorder,getHeight()-spaceBorder-tileUIheight-turnUIheight/2);
         } else {
             g.setColor(Color.YELLOW);
-            g.drawString("XXXXXXXXX's turn", spaceBorder+insideBorder,getHeight()-spaceBorder-tileUIheight-turnUIheight/2);
+            g.drawString(playingPlayersName+" turn", spaceBorder+insideBorder,getHeight()-spaceBorder-tileUIheight-turnUIheight/2);
         }
         g.setColor(c);
         g.fillRoundRect(spaceBorder+tileUIwidth+spaceBorder, getHeight()-spaceBorder-logUIheight, logUIwidth, logUIheight, round, round);

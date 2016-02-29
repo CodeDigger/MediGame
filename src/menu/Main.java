@@ -1,6 +1,6 @@
 package menu;
 
-import multiplayer.Client;
+import multiplayerServer.Client;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -13,8 +13,8 @@ import java.util.logging.Logger;
 
 import javax.swing.*;
 
-import mapBuilder.ClientMapPanel;
-import multiplayer.Server;
+import multiplayerMode.ClientMapPanel;
+import multiplayerServer.Server;
 import testMode.TmMapPanel;
 import testMode.TmMenuBar;
 

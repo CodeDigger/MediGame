@@ -1,7 +1,6 @@
 
 package testMode;
 
-import mapBuilder.*;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
