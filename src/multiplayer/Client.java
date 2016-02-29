@@ -26,6 +26,7 @@ public class Client implements MessageListener, MapPanelListener {
     ClientMapHandler mapHandler;
 
     ClientPlayer player;
+    int clientIndex = -1;
     PrintWriter outServer;
 
 
@@ -66,8 +67,18 @@ public class Client implements MessageListener, MapPanelListener {
 
         int[] packet = DataPacketHandler.handlePacket(serverMessage);
         switch (packet[DataPacketHandler.SUBPACKET_PACKETTYPE]) {
-            case DataPacketHandler.PACKETTYPE_STARTTURN:
-                mapPanel.permissionToPlay();
+            case DataPacketHandler.PACKETTYPE_PLAYERSTURN:
+                int playersTurn = packet[DataPacketHandler.SUBPACKET_PLAYERSTURN];
+                if (clientIndex == -1) {
+                    clientIndex = playersTurn;
+                    System.out.println("CLIENT: You have "+clientIndex+" as Client Index! :) ");
+                } else if (clientIndex == playersTurn) {
+                    mapPanel.permissionToPlay();
+                    player.getUI().setTurn(true);
+                } else {
+                    player.getUI().setTurn(false);
+                    //TODO Tell player who's playing
+                }
                 break;
             case DataPacketHandler.PACKETTYPE_TILEPLACEMENT:
                 int row = packet[DataPacketHandler.SUBPACKET_TILETOPLACE_ROW];
@@ -121,7 +132,7 @@ public class Client implements MessageListener, MapPanelListener {
 
     @Override
     public void ready() {
-        outServer.println(DataPacketHandler.createStartTurnPackage());
+        outServer.println(DataPacketHandler.createPlayerReadyPackage());
     }
 
 }

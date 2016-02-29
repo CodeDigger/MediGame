@@ -7,7 +7,7 @@ package multiplayer;
  */
 public class DataPacketHandler {
 
-    public static final int PACKETTYPE_STARTTURN = 0;
+    public static final int PACKETTYPE_PLAYERREADY = 0;
     public static final int PACKETTYPE_TILEREQUEST = 1;
     public static final int PACKETTYPE_TILEDELIVERY = 2;
     public static final int PACKETTYPE_TILEPLACEMENT = 3;
@@ -16,6 +16,7 @@ public class DataPacketHandler {
     public static final int PACKETTYPE_SERVERMESSAGE = 6;
     public static final int PACKETTYPE_CHATMESSAGE = 7;
     public static final int PACKETTYPE_STARTGAME = 8;
+    public static final int PACKETTYPE_PLAYERSTURN = 9;
 
     public static final int SUBPACKET_PACKETTYPE = 0;
     public static final int SUBPACKET_TILETYPETOPLAY = 1;
@@ -24,9 +25,8 @@ public class DataPacketHandler {
     public static final int SUBPACKET_TILETOPLACE_TYPE = 3;
     public static final int SUBPACKET_TILETOPLACE_ALIGNMENT = 4;
     public static final int SUBPACKET_STACKNUMBER = 1;
+    public static final int SUBPACKET_PLAYERSTURN = 1;
     
-
-
     public static String createTilePlacementPackage(int row, int col, int tileType, int tileAlignment){
         return (PACKETTYPE_TILEPLACEMENT + ":" + row + ":" + col + ":" + tileType + ":" + tileAlignment);
     }
@@ -35,8 +35,8 @@ public class DataPacketHandler {
         return (PACKETTYPE_TILEDELIVERY + ":" + tileType);
     }
 
-    public static String createStartTurnPackage(){
-        return String.valueOf(PACKETTYPE_STARTTURN);
+    public static String createPlayerReadyPackage(){
+        return String.valueOf(PACKETTYPE_PLAYERREADY);
     }
 
     public static String createTileRequestPackage(int stackNumber){
@@ -62,14 +62,18 @@ public class DataPacketHandler {
     public static String createStartGamePackage() {
         return String.valueOf(PACKETTYPE_STARTGAME);
     }
+    
+    public static String createPlayerTurnPackage(int playerIndex) {
+        return (PACKETTYPE_PLAYERSTURN + ":" + playerIndex);
+    }
 
 
 
     public static int[] handlePacket(String packet){
         int[] returnInt;
         switch (Character.getNumericValue(packet.charAt(0))) { //The first character in the packet is the package type
-            case PACKETTYPE_STARTTURN:
-                returnInt = new int[]{PACKETTYPE_STARTTURN};
+            case PACKETTYPE_PLAYERREADY:
+                returnInt = new int[]{PACKETTYPE_PLAYERREADY};
                 break;
             case PACKETTYPE_TILEREQUEST:
                 int stackNumber = Integer.parseInt(packet.substring(2, packet.length()));
@@ -112,8 +116,13 @@ public class DataPacketHandler {
             case PACKETTYPE_STARTGAME:
                 returnInt = new int[]{PACKETTYPE_STARTGAME};
                 break;
+            case PACKETTYPE_PLAYERSTURN:
+                int clientIndex = Integer.parseInt(packet.substring(2, packet.length()));
+                returnInt = new int[]{PACKETTYPE_PLAYERSTURN, clientIndex};
+                break;
             default:
                 returnInt = new int[]{0,0};
+                System.out.println("DPH: [WARNING] Unidentified Packet");
                 break;
         }
         return returnInt;

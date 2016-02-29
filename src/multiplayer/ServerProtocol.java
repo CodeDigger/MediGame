@@ -50,7 +50,7 @@ public class ServerProtocol implements ServerMessageListener {
                 System.out.println("Client Message: "+s);
                 notifyAllClients(message); //Just forward the same message that client sent to all clients
                 break;
-            case DataPacketHandler.PACKETTYPE_STARTTURN: //The client are ready to start play
+            case DataPacketHandler.PACKETTYPE_PLAYERREADY: //The client are ready to start play
                 notifyAllClients(DataPacketHandler.createServerMessage("Player " + clientIndex + " is ready!"));
                 connectedClients.get(getListIndexByClientIndex(clientIndex)).ready2Play = true;
                 if (allPlayersReady2Play()){
@@ -63,7 +63,7 @@ public class ServerProtocol implements ServerMessageListener {
 
     private void startGame() {
         notifyAllClients(DataPacketHandler.createStartGamePackage());
-        notifyActiveClient(DataPacketHandler.createStartTurnPackage());
+        notifyAllClients(DataPacketHandler.createPlayerTurnPackage(activeClient));
     }
 
     private boolean allPlayersReady2Play() {
@@ -109,14 +109,15 @@ public class ServerProtocol implements ServerMessageListener {
         if (activeClient > connectedClients.size()-1) {
             activeClient = 0;
         }
-        notifyActiveClient(DataPacketHandler.createStartTurnPackage());
+//        notifyActiveClient(DataPacketHandler.createStartTurnPackage());
+        notifyAllClients(DataPacketHandler.createPlayerTurnPackage(activeClient));
     }
 
     public void newClientConnected(PrintWriter out, int clientIndex) {
-        //connectedClients++;
-        notifyAllClients(DataPacketHandler.createServerMessage("Player " + clientIndex + " connected!"));
         connectedClients.add(new ClientInfo(clientIndex, false, true));
         outList.add(out);
+        notifyClientByIndex(DataPacketHandler.createPlayerTurnPackage(clientIndex), clientIndex);
+        notifyAllClients(DataPacketHandler.createServerMessage("Player " + clientIndex + " connected!"));
         System.out.println("MEDIPROTOCOL: " + connectedClients + " connected");
     }
 
