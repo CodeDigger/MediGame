@@ -34,8 +34,8 @@ public class ServerProtocol implements ServerMessageListener {
                 int stackNumber = packet[DataPacketHandler.SUBPACKET_STACKNUMBER];
                 System.out.println("MEDIPROTOCOL: Client " + activeClient + " requested a tile from stack " + stackNumber);
                 Tile t = mapHandler.drawLand(stackNumber);
-                notifyActiveClient(DataPacketHandler.createTileDeliveryPackage(t.getType()));
-                notifyInactiveClients(DataPacketHandler.createTileDrawnPackage(stackNumber));
+                notifyClientByIndex(DataPacketHandler.createTileDeliveryPackage(t.getType()), clientIndex);
+                notifyComplementClientsByIndex(DataPacketHandler.createTileDrawnPackage(stackNumber), clientIndex);
             break;
             case DataPacketHandler.PACKETTYPE_TILEPLACEMENT:
                 notifyInactiveClients(message);
@@ -87,10 +87,21 @@ public class ServerProtocol implements ServerMessageListener {
     private void notifyAllClients(String message) {
         outList.forEach(out -> out.println(message));
     }
-    
 
     private void notifyActiveClient(String message) {
         outList.get(activeClient).println(message);
+    }
+
+    private void notifyClientByIndex(String message, int clientIndex){
+        outList.get(clientIndex).println(message);
+    }
+
+    private void notifyComplementClientsByIndex(String message, int clientIndex){
+        outList.forEach(out->{
+            if(outList.indexOf(out) != clientIndex){
+                out.println(message);
+            }
+        });
     }
 
     public void nextActiveClient() {

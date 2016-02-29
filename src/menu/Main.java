@@ -32,13 +32,14 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
     Server server;
     ClientMapPanel clientMapPanel;
     Client client;
+    private boolean serverRunning = false;
 
     Dimension mapDim;
     Dimension menuDim;
     int frameHeight;
     int frameWidth;
     
-    boolean tmGameRunning = false;
+    private boolean tmGameRunning = false;
     private boolean multiplayerGameRunning = false;
 
     public Main() {
@@ -159,14 +160,15 @@ public class Main extends JFrame implements ComponentListener, ActionListener {
             setUpTMGame();
             startTMGame();
         } else if (e.getActionCommand().equals(MainMenu.START_SERVER)) {
-            server = new Server(4444, 2);
+            server = new Server(4444, 2); //TODO fix number of clients
             System.out.println("- CREATING SERVER:");
             server.start();
+            serverRunning = true;
         } else if (e.getActionCommand().equals(MainMenu.JOIN_SERVER)) {
             connectWindow = new ConnectWindow(this);
+            if (serverRunning) connectWindow.setIpString("localhost");
         } else if (e.getSource() == connectWindow.getConnectButton()) {
             setUpMultiplayerGame();
-            //startMultiplayerGame();
         }
 
     }

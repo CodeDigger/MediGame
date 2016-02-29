@@ -26,7 +26,8 @@ public class Server extends Thread {
     public void run() {
         
         try {
-            ServerSocket serverSocket = new ServerSocket(portNumber);
+            //ServerSocket serverSocket = new ServerSocket(portNumber);
+            ServerSocket serverSocket = new ServerSocket(portNumber, 0, InetAddress.getByName("localhost")); //Use for only localhost
             System.out.println("SERVER: The server is running on port: " + portNumber);
             while (listening) {
                 Socket socket = serverSocket.accept();
@@ -36,7 +37,6 @@ public class Server extends Thread {
                 new ServerMessageReceiverThread(in, serverProtocol, clientIndex++).start();
                 System.out.println("SERVER: Client connected! The number of clients is: " + clientIndex);
                 System.out.println("***********************************");
-                serverProtocol.nextActiveClient();
             }
         }
         catch (IOException e) {

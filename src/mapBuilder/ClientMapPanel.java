@@ -42,15 +42,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
 
     public ClientMapPanel(Main window) {
         this.mainFrame = window;
-        panelDim = new Dimension(initWidth, initHeight);
-        setPreferredSize(panelDim);
-        setBackground(Color.BLACK);
         mapHandler = new ClientMapHandler();
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        addKeyListener(this);
-
-        audioHandler = new AudioHandler();
     }
 
     public void setPlayer(ClientPlayer p) {
@@ -152,7 +144,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
 
             if (tS != null && tileRequestMode) { //Tile request
                 tS.drawStack();
-                mPL.tileDrawn(mapHandler.getTileStackNumber(tS));
+                mPL.tileRequested(mapHandler.getTileStackNumber(tS));
                 tileRequestMode = false;
                 repaint();
             } else { // Tile placement
@@ -338,7 +330,15 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
 
     public void gameStartedByServer() {
         lobbyFrame.dispose();
-        mainFrame.startMultiplayerGame();
+        panelDim = new Dimension(initWidth, initHeight);
+        setPreferredSize(panelDim);
+        setBackground(Color.BLACK);
+        addMouseListener(this);
+        addMouseMotionListener(this);
+        addKeyListener(this);
+        audioHandler = new AudioHandler();
         audioHandler.play("/resources/music/BGM-InGame-SkySpisn.wav");
+
+        mainFrame.startMultiplayerGame();
     }
 }

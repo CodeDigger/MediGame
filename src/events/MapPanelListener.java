@@ -11,7 +11,7 @@ package events;
  */
 public interface MapPanelListener {
     
-    void tileDrawn(int stackNumber);
+    void tileRequested(int stackNumber);
     void tilePlaced(int row, int col, int tileType, int alignment);
     void chatMessage(String s);
     void clientDisconnect();
