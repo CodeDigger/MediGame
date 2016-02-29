@@ -10,58 +10,78 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.util.Calendar;
+import tiles.TileHandler;
 
 
 public class UserInterface extends Canvas implements MessageListener {
 
     public Image[] tileImages;
+    Image imgBig;
     int currentImg;
     final static int activeMessages = 3;
     Calendar cal = Calendar.getInstance();
     String[] messages;
+    
+    // Layout variables
+    int spaceBorder;
+    int insideBorder;
+    int round = 20;
+    
+    // Tile UI variables
+    double uiTileScale;
+    int tileUIwidth;
+    int tileUIheight;
+    
+    // Turn UI variables
+    int turnUIheight;
+    boolean playersTurn;
+    
+    // Log UI variables
+    int logUIheight;
+    int logUIwidth;
     int fontSize = 12;
     int fontSpace = 4;
     Font messageFont = new Font(Font.SANS_SERIF, Font.PLAIN, fontSize);
 
-    int borderSize;
-
-    int tileUIwidth;
-    int tileUIheight;
-    int tileUIborder;
-    
-    int logUIheight;
-    int logUIwidth;
-    int logUIborder;
-
-    int round = 20;
-
     public UserInterface(Dimension dim) {
         super.setSize(dim);
-        borderSize = 20;
-        tileUIwidth = 200;
-        tileUIheight = 200;
-        tileUIborder = 10;
+        spaceBorder = 20;
+        uiTileScale = 1.8;
+        insideBorder = 10;
+        tileUIwidth = (int)(TileHandler.getWidth()*uiTileScale)+insideBorder*2;
+        tileUIheight = (int)(TileHandler.getHeight()*uiTileScale)+insideBorder*2;
+        turnUIheight = 16;
         messages = new String[activeMessages];
-        logUIborder = 10;
-        logUIheight = fontSize*messages.length + fontSpace*(messages.length-1) + logUIborder*2;
-        logUIwidth = dim.width-borderSize*3-tileUIwidth;
+        logUIheight = fontSize*messages.length + fontSpace*(messages.length-1) + insideBorder*2;
+        logUIwidth = dim.width-spaceBorder*3-tileUIwidth;
     }
 
     public void setTileImages(Image[] imgs, int alignment) {
         tileImages = imgs;
         currentImg = alignment;
+        if (imgs != null) {
+            Image img = tileImages[currentImg];
+            imgBig = img.getScaledInstance((int)(img.getWidth(null)*uiTileScale), (int)(img.getHeight(null)*uiTileScale), Image.SCALE_SMOOTH);
+        } else {
+            imgBig = null;
+        }
+        
+    }
+    
+    public void setTurn(boolean playersTurn) {
+        this.playersTurn = playersTurn;
     }
     
     @Override
     public void setSize(int width, int height) {
         super.setSize(width, height);
-        logUIwidth = width-borderSize*3-tileUIwidth;
+        logUIwidth = width-spaceBorder*3-tileUIwidth;
     }
     
     @Override
     public void setSize(Dimension dim) {
         super.setSize(dim);
-        logUIwidth = dim.width-borderSize*3-tileUIwidth;
+        logUIwidth = dim.width-spaceBorder*3-tileUIwidth;
     }
 
     public void rotateTile() {
@@ -70,6 +90,8 @@ public class UserInterface extends Canvas implements MessageListener {
             if (currentImg >= tileImages.length)
                 currentImg = 0;
         }
+        Image img = tileImages[currentImg];
+        imgBig = img.getScaledInstance((int)(img.getWidth(null)*uiTileScale), (int)(img.getHeight(null)*uiTileScale), Image.SCALE_SMOOTH);
     }
     
     public void newMessage(String s) {
@@ -82,16 +104,23 @@ public class UserInterface extends Canvas implements MessageListener {
     public void paint(Graphics g, ImageObserver imgOb) {
         Color c = new Color(40, 40, 40, 80);
         g.setColor(c);
-        g.fillRoundRect(borderSize, getHeight()-borderSize-tileUIheight, tileUIwidth, tileUIheight, round, round);
-        if (tileImages != null) {
-            Image img = tileImages[currentImg];
-            Image imgBig = img.getScaledInstance((int)(img.getWidth(null)*1.5), (int)(img.getHeight(null)*1.5), Image.SCALE_SMOOTH);
-            g.drawImage(imgBig, borderSize+tileUIborder, getHeight()-borderSize-tileUIheight+tileUIborder, imgOb);
+        g.fillRoundRect(spaceBorder, getHeight()-spaceBorder-tileUIheight-insideBorder-turnUIheight, tileUIwidth, tileUIheight+insideBorder+turnUIheight, round, round);
+        if (imgBig != null) {
+            g.drawImage(imgBig, spaceBorder+insideBorder, getHeight()-spaceBorder-tileUIheight+insideBorder, imgOb);
         }
-        g.fillRoundRect(borderSize+tileUIwidth+borderSize, getHeight()-borderSize-logUIheight, logUIwidth, logUIheight, round, round);
+        if (playersTurn) {
+            g.setColor(Color.GREEN);
+            g.drawString("It's your turn!", spaceBorder+insideBorder,getHeight()-spaceBorder-tileUIheight-turnUIheight/2);
+        } else {
+            g.setColor(Color.YELLOW);
+            g.drawString("XXXXXXXXX's turn", spaceBorder+insideBorder,getHeight()-spaceBorder-tileUIheight-turnUIheight/2);
+        }
+        g.setColor(c);
+        g.fillRoundRect(spaceBorder+tileUIwidth+spaceBorder, getHeight()-spaceBorder-logUIheight, logUIwidth, logUIheight, round, round);
         g.setColor(Color.WHITE);
         for (int i = 0; i < messages.length; i++) {
-            g.drawString(cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.SECOND) +" - "+ messages[i], borderSize+tileUIwidth+borderSize+logUIborder, getHeight()-borderSize-logUIborder-fontSpace*(i)-fontSize*i);
+            g.setFont(messageFont);
+            g.drawString(cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.SECOND) +" - "+ messages[i], spaceBorder+tileUIwidth+spaceBorder+insideBorder, getHeight()-spaceBorder-insideBorder-fontSpace*(i)-fontSize*i);
         }
     }
 

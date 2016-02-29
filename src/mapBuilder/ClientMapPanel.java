@@ -243,6 +243,7 @@ public class ClientMapPanel extends Panel implements MouseListener, MouseMotionL
                 break;
             case KeyEvent.VK_SPACE:
                 player.rotateTile();
+                repaint();
                 break;
             case KeyEvent.VK_Q:
                 mPL.clientDisconnect();
